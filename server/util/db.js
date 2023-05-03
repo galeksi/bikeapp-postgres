@@ -19,7 +19,7 @@ const connectToDatabase = async () => {
 
 const migrationConf = {
   migrations: {
-    glob: 'migrations/*.js',
+    glob: 'server/migrations/*.js',
   },
   storage: new SequelizeStorage({ sequelize, tableName: 'migrations' }),
   context: sequelize.getQueryInterface(),
