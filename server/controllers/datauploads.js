@@ -1,94 +1,88 @@
 const router = require('express').Router();
-const { Station } = require('../models/index');
+const { Station, Trip } = require('../models/index');
 
-const csv = require('fast-csv');
-const fs = require('fs');
+const readCsv = require('../util/dataloader');
 const multer = require('multer');
 const upload = multer({ dest: 'tmp' });
-const isValidCoordinates = require('is-valid-coordinates');
-// const moment = require('moment');
 
-const stationValidator = (obj) => {
-  // Empty fields are corrected for this dataset to have consistent database entries
-  if (obj.kaupunki === ' ') obj.kaupunki = 'Helsinki';
-  if (obj.stad === ' ') obj.stad = 'Helsingfors';
-  if (obj.operator === ' ') obj.operator = 'CityBike Finland';
+const { stationValidator, tripValidator } = require('../util/validators');
 
-  // Station number and coordinates are validated
-  if (isNaN(Number(obj.number)) || Number(obj.number) <= 0) return null;
-  if (!isValidCoordinates(Number(obj.long), Number(obj.lat))) return null;
+// Custom headers to match mongoose schema for DB upload
+const stationHeader = [
+  'fid',
+  'number',
+  'nimi',
+  'namn',
+  'name',
+  'osoite',
+  'adress',
+  'kaupunki',
+  'stad',
+  'operator',
+  'capacity',
+  'long',
+  'lat',
+];
 
-  return obj;
-};
-
-// fast-csv package is changed to a promise returning function to be called seperately and asynchrone
-const readCsv = (path, options, validator, validatorData) => {
-  return new Promise((resolve, reject) => {
-    const fileRows = [];
-
-    csv
-      .parseFile(path, options)
-      .on('error', (error) => {
-        console.error(error);
-        return reject(error);
-      })
-      .on('data', (row) => {
-        const validData = validator ? validator(row, validatorData) : row;
-        if (validData) fileRows.push(validData);
-      })
-      .on('end', () => {
-        // if (process.env.NODE_ENV === !'test') fs.unlinkSync(path);
-        fs.unlinkSync(path);
-        resolve(fileRows);
-      });
-  });
-};
+const tripHeader = [
+  'departure',
+  'return',
+  'departureStation',
+  'departureStationName',
+  'returnStation',
+  'returnStationName',
+  'distance',
+  'duration',
+];
 
 router.post('/stations', upload.single('file'), async (req, res) => {
-  // Custom header to match mongoose schema for DB upload
-  const stationHeader = [
-    'fid',
-    'number',
-    'nimi',
-    'namn',
-    'name',
-    'osoite',
-    'adress',
-    'kaupunki',
-    'stad',
-    'operator',
-    'capacity',
-    'long',
-    'lat',
-  ];
-
   // Data is uploaded to tmp/csv and validated rows with new headers returned as objects
-  const data = await readCsv(
-    req.file.path,
-    {
+  const data = await readCsv({
+    path: req.file.path,
+    options: {
       headers: stationHeader,
       renameHeaders: true,
     },
-    stationValidator
-  );
-  console.log(data);
+    validator: stationValidator,
+  });
 
   // Validated data is saved to the DB
   const savedStations = await Station.bulkCreate(data, {
     ignoreDuplicates: true,
   });
+  // DB returns dublicates with ID null
+  const duplicates = savedStations.filter((s) => s.toJSON().id === null).length;
 
-  // console.log(savedStations.toJson());
-  savedStations.map((s) => console.log(s.toJSON()));
+  res.json({
+    'valid imports': data.length,
+    duplicates: duplicates,
+    uploads: data.length - duplicates,
+  });
+});
 
-  if (savedStations) {
-    res.json({
-      'valid imports': data.length,
-      uploads: savedStations.length,
-    });
-  } else {
-    res.status(404).end();
-  }
+router.post('/trips', upload.single('file'), async (req, res) => {
+  // Stations queried to be refrenced in trips departure and return
+  const stations = await Station.findAll();
+  const stationsJson = stations.map((s) => s.toJSON());
+
+  // Data is uploaded to tmp/csv and validated rows with new headers returned as objects
+  const data = await readCsv({
+    path: req.file.path,
+    options: {
+      headers: tripHeader,
+      renameHeaders: true,
+    },
+    validator: tripValidator,
+    validatorData: stationsJson,
+  });
+
+  // Validated data is saved to the DB
+  const savedTrips = await Trip.bulkCreate(data);
+
+  res.json({
+    'valid imports': data.length,
+    uploads: savedTrips.length,
+  });
 });
 
 module.exports = router;
