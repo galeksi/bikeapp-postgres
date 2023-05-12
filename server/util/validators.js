@@ -16,7 +16,6 @@ const stationValidator = (obj) => {
 
 const tripValidator = (obj, stations) => {
   // Distance and duration are validated
-  console.log(typeof obj.distance);
   if (obj.distance < 10 || obj.duration < 10) return null;
 
   // Trips with unvalid date strings are discarded
