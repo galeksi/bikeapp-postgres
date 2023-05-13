@@ -13,7 +13,11 @@ const readCsv = ({ path, options, validator, validatorData }) => {
       })
       .on('data', (row) => {
         const validData = validator ? validator(row, validatorData) : row;
-        if (validData) fileRows.push(validData);
+        if (validData) {
+          fileRows.push(validData);
+        } else {
+          fileRows.push('invalid');
+        }
       })
       .on('end', () => {
         // if (process.env.NODE_ENV === !'test') fs.unlinkSync(path);

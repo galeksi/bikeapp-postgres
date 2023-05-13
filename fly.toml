@@ -1,13 +1,10 @@
-# fly.toml file generated for bikeapp-postgres on 2023-05-03T13:25:27+03:00
+# fly.toml file generated for bikeapp-postgres on 2023-05-13T15:50:59+03:00
 
 app = "bikeapp-postgres"
 kill_signal = "SIGINT"
 kill_timeout = 5
 primary_region = "arn"
 processes = []
-
-[build]
-  builder = "heroku/buildpacks:20"
 
 [env]
   PORT = "8080"
@@ -18,6 +15,7 @@ processes = []
 [[services]]
   http_checks = []
   internal_port = 8080
+  min_machines_running = 0
   processes = ["app"]
   protocol = "tcp"
   script_checks = []

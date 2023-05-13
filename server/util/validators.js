@@ -16,6 +16,18 @@ const stationValidator = (obj) => {
 
 const tripValidator = (obj, stations) => {
   // Distance and duration are validated
+  if (isNaN(Number(obj.distance))) {
+    return null;
+  } else {
+    obj.distance = Math.floor(Number(obj.distance));
+  }
+
+  if (isNaN(Number(obj.duration))) {
+    return null;
+  } else {
+    obj.duration = Math.floor(Number(obj.duration));
+  }
+
   if (obj.distance < 10 || obj.duration < 10) return null;
 
   // Trips with unvalid date strings are discarded
@@ -52,4 +64,22 @@ const tripValidator = (obj, stations) => {
   return obj;
 };
 
-module.exports = { stationValidator, tripValidator };
+const partition = (data) => {
+  const valid = [];
+  const invalid = [];
+
+  data.forEach((element, index) => {
+    if (element === 'invalid') {
+      invalid.push(index + 1);
+    } else {
+      valid.push(element);
+    }
+  });
+
+  return {
+    valid: valid,
+    invalid: invalid,
+  };
+};
+
+module.exports = { stationValidator, tripValidator, partition };

@@ -4,8 +4,13 @@ const { Station, Trip } = require('../models/index');
 const readCsv = require('../util/dataloader');
 const multer = require('multer');
 const upload = multer({ dest: 'tmp' });
+const _ = require('lodash');
 
-const { stationValidator, tripValidator } = require('../util/validators');
+const {
+  stationValidator,
+  tripValidator,
+  partition,
+} = require('../util/validators');
 
 // Custom headers to match mongoose schema for DB upload
 const stationHeader = [
@@ -76,12 +81,27 @@ router.post('/trips', upload.single('file'), async (req, res) => {
     validatorData: stationsJson,
   });
 
-  // Validated data is saved to the DB
-  const savedTrips = await Trip.bulkCreate(data);
+  const validatedData = partition(data);
+  const chunkedData = _.chunk(validatedData.valid, 1000);
+
+  const uploadChunks = async (data) => {
+    const result = [];
+
+    for (let chunk of data) {
+      const trips = await Trip.bulkCreate(chunk);
+      trips.forEach((e) => result.push(e.toJSON()));
+    }
+
+    return result;
+  };
+
+  const uploads = await uploadChunks(chunkedData);
 
   res.json({
-    'valid imports': data.length,
-    uploads: savedTrips.length,
+    'valid imports': validatedData.valid.length,
+    'uploaded imports': uploads.length,
+    invalid: validatedData.invalid.length,
+    'invalid rows': validatedData.invalid,
   });
 });
 
