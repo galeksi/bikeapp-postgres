@@ -1,5 +1,7 @@
 const Station = require('./stations');
 const Trip = require('./trip');
+const User = require('./user');
+const Session = require('./session');
 
 Station.hasMany(Trip, {
   as: 'forDeparture',
@@ -29,8 +31,16 @@ Trip.belongsTo(Station, {
     allowNull: false,
   },
 });
+
+User.hasMany(Trip);
+Trip.belongsTo(User);
+
+User.hasMany(Session);
+Session.belongsTo(User);
 
 module.exports = {
   Station,
   Trip,
+  User,
+  Session,
 };
