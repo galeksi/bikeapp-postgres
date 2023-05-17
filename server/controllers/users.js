@@ -9,11 +9,11 @@ router.post('/', async (req, res) => {
   const saltRounds = 10;
   const passwordHash = await bcrypt.hash(password, saltRounds);
 
-  const user = new User({
+  const user = {
     username,
     name,
     passwordHash,
-  });
+  };
 
   const newUser = await User.create(user);
 
