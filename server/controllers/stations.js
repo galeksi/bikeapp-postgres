@@ -1,9 +1,16 @@
 const router = require('express').Router();
 const { Op } = require('sequelize');
 const { Station, Trip } = require('../models/index');
+const { userAuthorisation, isAdmin } = require('../util/middleware');
 const { calculateAvg, getMostPopular } = require('../util/helpers');
 
-router.post('/', async (req, res) => {
+router.post('/', userAuthorisation, isAdmin, async (req, res) => {
+  if (!req.admin) {
+    return res.status(401).json({
+      'authorisation error': 'no admin',
+    });
+  }
+
   const number = await Station.max('number');
   const station = req.body;
   station.number = number + 1;
@@ -60,7 +67,13 @@ router.get('/:id/stats', async (req, res) => {
   }
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', userAuthorisation, isAdmin, async (req, res) => {
+  if (!req.admin) {
+    return res.status(401).json({
+      'authorisation error': 'no admin',
+    });
+  }
+
   const station = await Station.findByPk(req.params.id);
   if (station && req.body.capacity) {
     station.capacity = req.body.capacity;
@@ -71,13 +84,33 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-router.delete('/:id', async (req, res) => {
-  const station = await Station.findByPk(req.params.id);
-  if (station) {
+router.delete('/:id', userAuthorisation, isAdmin, async (req, res) => {
+  const id = req.params.id;
+
+  if (!req.admin) {
+    return res.status(401).json({
+      'authorisation error': 'no admin',
+    });
+  }
+
+  const station = await Station.findByPk(id);
+  if (!station) {
+    return res.status(404).end();
+  }
+
+  const tripsByStation = await Trip.count({
+    where: {
+      [Op.or]: [{ departureStation: id }, { returnStation: id }],
+    },
+  });
+
+  if (tripsByStation) {
+    res.status(400).json({
+      'association error': 'stations with referenced trips cannot be deleted',
+    });
+  } else {
     await station.destroy();
     res.status(204).end();
-  } else {
-    res.status(404).end();
   }
 });
 

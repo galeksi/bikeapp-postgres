@@ -1,22 +1,22 @@
 const jwt = require('jsonwebtoken');
 const { SECRET } = require('../util/config');
-const { Session } = require('../models');
+const { Session, User } = require('../models/index');
 
-const errorHandler = (error, request, response, next) => {
+const errorHandler = (error, req, res, next) => {
   console.error(error.message);
 
   if (error.name === 'Error') {
-    return response.status(400).send({
+    return res.status(400).send({
       error: error.message,
     });
   }
   if (error.name === 'SequelizeValidationError') {
-    return response.status(400).send({
+    return res.status(400).send({
       'database validation error': error.message,
     });
   }
   if (error.name === 'JsonWebTokenError') {
-    return response.status(400).send({
+    return res.status(401).send({
       'user validation error': error.message,
     });
   }
@@ -29,14 +29,26 @@ const userAuthorisation = async (req, res, next) => {
   if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
     req.decodedToken = jwt.verify(authorization.substring(7), SECRET);
   } else {
-    next(Error('Token missing'));
+    return res.status(401).json({
+      'authorisation error': 'Token missing',
+    });
   }
 
   const session = await Session.findByPk(authorization.substring(7));
   if (!session) {
-    next(Error('Session expired, please login'));
+    return res.status(401).json({
+      'authorisation error': 'Session expired, please login',
+    });
   }
   next();
 };
 
-module.exports = { errorHandler, userAuthorisation };
+const isAdmin = async (req, res, next) => {
+  const user = await User.findByPk(req.decodedToken.id);
+  if (user.toJSON().admin) {
+    req.admin = true;
+  }
+  next();
+};
+
+module.exports = { errorHandler, userAuthorisation, isAdmin };
