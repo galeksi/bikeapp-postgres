@@ -57,7 +57,7 @@ router.put('/:id', userAuthorisation, isAdmin, async (req, res) => {
     return res.status(404).end();
   }
 
-  if (!(trip.userId === req.decodedToken.id || req.admin)) {
+  if (!(trip.toJSON().userId === req.decodedToken.id || req.admin)) {
     return res.status(401).json({
       'authorisation error': 'no correct user or admin',
     });
@@ -86,7 +86,7 @@ router.delete('/:id', userAuthorisation, isAdmin, async (req, res) => {
     return res.status(404).end();
   }
 
-  if (!(trip.userId === req.decodedToken.id || req.admin)) {
+  if (!(trip.toJSON().userId === req.decodedToken.id || req.admin)) {
     return res.status(401).json({
       'authorisation error': 'no correct user or admin',
     });
