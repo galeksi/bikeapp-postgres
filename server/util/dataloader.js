@@ -16,7 +16,7 @@ const readCsv = ({ path, options, validator, validatorData }) => {
         if (validData) {
           fileRows.push(validData);
         } else {
-          fileRows.push('invalid');
+          fileRows.push(null);
         }
       })
       .on('end', () => {

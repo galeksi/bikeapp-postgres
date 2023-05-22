@@ -2,7 +2,12 @@ const fs = require('fs').promises;
 const path = require('node:path');
 
 const readCsv = require('../util/dataloader');
-const { stationValidator, tripValidator } = require('../util/validators');
+const {
+  stationValidator,
+  tripValidator,
+  partition,
+} = require('../util/validators');
+const { calculateAvg, getMostPopular } = require('../util/helpers');
 
 const src = path.resolve(__dirname, './csv');
 const dest = path.resolve(__dirname, './tmp');
@@ -48,125 +53,170 @@ beforeAll(async () => {
   await fs.copyFile(`${src}/stations.csv`, `${dest}/stations.csv`);
   await fs.copyFile(`${src}/trips.csv`, `${dest}/trips.csv`);
 
-  // stations = await readCsv(path.resolve(__dirname, './csv/stations.csv'), {
-  //   headers: stationHeader,
-  //   renameHeaders: true,
-  // });
-  // validatedStations = stations.map((station) => stationValidator(station));
+  stations = await readCsv({
+    path: `${dest}/stations.csv`,
+    options: {
+      headers: stationHeader,
+      renameHeaders: true,
+    },
+  });
+  validatedStations = stations.map((station) => stationValidator(station));
 
-  // allValidStations = await readCsv(
-  //   path.resolve(__dirname, './csv/allValidStations.csv'),
-  //   {
-  //     headers: stationHeader,
-  //     renameHeaders: true,
-  //   }
-  // );
+  const allStations = await readCsv({
+    path: `${dest}/allValidStations.csv`,
+    options: {
+      headers: stationHeader,
+      renameHeaders: true,
+    },
+  });
+  allValidStations = allStations.map((s) => {
+    s.number = Number(s.number);
+    s.id = s.number;
+    return s;
+  });
 
-  // trips = await readCsv(path.resolve(__dirname, './csv/trips.csv'), {
-  //   headers: tripHeader,
-  //   renameHeaders: true,
-  // });
-
-  // validatedTrips = trips.map((trip) => tripValidator(trip, allValidStations));
-  // console.log(validatedTrips);
+  trips = await readCsv({
+    path: `${dest}/trips.csv`,
+    options: {
+      headers: tripHeader,
+      renameHeaders: true,
+    },
+  });
+  validatedTrips = trips.map((trip) => tripValidator(trip, allValidStations));
 });
 
-// describe('Reading and parsing csv files', () => {
-//   test('Parse stations', async () => {
-//     const result = await readCsv(
-//       path.resolve(__dirname, './csv/stations.csv'),
-//       {
-//         headers: stationHeader,
-//         renameHeaders: true,
-//       }
-//     );
+describe('Reading and parsing csv files', () => {
+  test('Parse stations', async () => {
+    expect(stations.length).toBe(11);
+    expect(Object.keys(stations[0])).toEqual(stationHeader);
+  });
 
-//     expect(result.length).toBe(11);
-//     expect(Object.keys(result[0])).toEqual(stationHeader);
-//   });
+  test('Parse trips', async () => {
+    expect(trips.length).toBe(116);
+    expect(Object.keys(trips[0])).toEqual(tripHeader);
+  });
+});
 
-//   test('Parse trips', async () => {
-//     const result = await readCsv(path.resolve(__dirname, './csv/trips.csv'), {
-//       headers: tripHeader,
-//       renameHeaders: true,
-//     });
+describe('Station validations', () => {
+  test('Number has to be greater than zero', async () => {
+    expect(validatedStations[0]).toBe(null);
+  });
 
-//     expect(result.length).toBe(19);
-//     expect(Object.keys(result[0])).toEqual(tripHeader);
-//   });
-// });
+  test('Number has to be a number', async () => {
+    expect(validatedStations[1]).toBe(null);
+  });
 
-// describe('Station validations', () => {
-//   test('Number has to be a number', async () => {
-//     expect(validatedStations[0]).toBe(null);
-//   });
+  test('Empty fields are corrected', async () => {
+    expect(validatedStations[2].kaupunki).toBe('Helsinki');
+    expect(validatedStations[2].stad).toBe('Helsingfors');
+    expect(validatedStations[2].operator).toBe('CityBike Finland');
+  });
 
-//   test('Number has to be greater than zero', async () => {
-//     expect(validatedStations[1]).toBe(null);
-//   });
+  test('Coordinates are valid', async () => {
+    expect(validatedStations[3]).toBe(null);
+    expect(validatedStations[4]).toBe(null);
+  });
 
-//   test('Empty fields are corrected', async () => {
-//     expect(validatedStations[2].kaupunki).toBe('Helsinki');
-//     expect(validatedStations[2].stad).toBe('Helsingfors');
-//     expect(validatedStations[2].operator).toBe('CityBike Finland');
-//   });
+  test('Correct entry passes as valid', async () => {
+    expect(validatedStations[5]).not.toBe(null);
+  });
+});
 
-//   test('Coordinates are valid', async () => {
-//     expect(validatedStations[3]).toBe(null);
-//     expect(validatedStations[4]).toBe(null);
-//   });
-// });
+describe('Trip validations', () => {
+  test('Valid stations number for departure or return', async () => {
+    expect(validatedTrips[0]).toBe(null);
+    expect(validatedTrips[1]).toBe(null);
+    expect(validatedTrips[2]).toBe(null);
+    expect(validatedTrips[3]).toBe(null);
+    expect(validatedTrips[4]).toBe(null);
+    expect(validatedTrips[5]).toBe(null);
+  });
 
-// describe('Trip validations', () => {
-//   test('Valid stations number for departure or return', async () => {
-//     expect(validatedTrips[0]).toBe(null);
-//     expect(validatedTrips[1]).toBe(null);
-//     expect(validatedTrips[2]).toBe(null);
-//     expect(validatedTrips[3]).toBe(null);
-//     expect(validatedTrips[4]).toBe(null);
-//     expect(validatedTrips[5]).toBe(null);
-//   });
+  test('Distance and duration must be numbers', async () => {
+    expect(validatedTrips[11]).toBe(null);
+    expect(validatedTrips[12]).toBe(null);
+  });
 
-//   test('Distance and duration must be at least 10', async () => {
-//     expect(validatedTrips[6]).toBe(null);
-//     expect(validatedTrips[7]).toBe(null);
-//   });
+  test('Distance and duration must be at least 10', async () => {
+    expect(validatedTrips[6]).toBe(null);
+    expect(validatedTrips[7]).toBe(null);
+  });
 
-//   test('Dates should be valid', async () => {
-//     expect(validatedTrips[8]).toBe(null);
-//     expect(validatedTrips[9]).toBe(null);
-//   });
+  test('Dates should be valid', async () => {
+    expect(validatedTrips[8]).toBe(null);
+    expect(validatedTrips[9]).toBe(null);
+  });
 
-//   test('Dates should be valid', async () => {
-//     expect(validatedTrips[10]).toBe(null);
-//   });
-// });
+  test('Return should be after departure', async () => {
+    expect(validatedTrips[10]).toBe(null);
+  });
 
-// describe('Read, parse and validate stations and trips', () => {
-//   test('Stations are parsed and validated correct', async () => {
-//     const validatedStations = await readCsv(
-//       path.resolve(__dirname, './csv/stations.csv'),
-//       {
-//         headers: stationHeader,
-//         renameHeaders: true,
-//       },
-//       stationValidator
-//     );
+  test('Correct entry passes as valid', async () => {
+    expect(validatedStations[13]).not.toBe(null);
+  });
+});
 
-//     expect(validatedStations.length).toBe(7);
-//   });
+describe('Read, parse, validate and partition stations and trips', () => {
+  test('Stations are parsed, validated and partitioned correctly', async () => {
+    await fs.copyFile(`${src}/stations.csv`, `${dest}/stations.csv`);
+    const validatedStations = await readCsv({
+      path: `${dest}/stations.csv`,
+      options: {
+        headers: stationHeader,
+        renameHeaders: true,
+      },
+      validator: stationValidator,
+    });
+    const partitionedStations = partition(validatedStations);
 
-//   test('Trips are parsed and validated correct', async () => {
-//     const validatedTrips = await readCsv(
-//       path.resolve(__dirname, './csv/trips.csv'),
-//       {
-//         headers: tripHeader,
-//         renameHeaders: true,
-//       },
-//       tripValidator,
-//       allValidStations
-//     );
+    expect(partitionedStations.valid.length).toBe(7);
+    expect(partitionedStations.invalid.length).toBe(4);
+  });
 
-//     expect(validatedTrips.length).toBe(8);
-//   });
-// });
+  test('Trips are parsed, validated and partitioned correctly', async () => {
+    await fs.copyFile(`${src}/trips.csv`, `${dest}/trips.csv`);
+    const validatedTrips = await readCsv({
+      path: `${dest}/trips.csv`,
+      options: {
+        headers: tripHeader,
+        renameHeaders: true,
+      },
+      validator: tripValidator,
+      validatorData: allValidStations,
+    });
+    const partitionedTrips = partition(validatedTrips);
+
+    expect(partitionedTrips.valid.length).toBe(99);
+    expect(partitionedTrips.invalid.length).toBe(17);
+  });
+});
+
+describe('Test helper functions', () => {
+  test('calculateAverage', () => {
+    const avg = calculateAvg(partition(validatedTrips).valid);
+
+    expect(avg).toBe('2.8');
+  });
+
+  test('getMostPopular', async () => {
+    await fs.copyFile(`${src}/trips.csv`, `${dest}/trips.csv`);
+    const validatedTrips = await readCsv({
+      path: `${dest}/trips.csv`,
+      options: {
+        headers: tripHeader,
+        renameHeaders: true,
+      },
+      validator: tripValidator,
+      validatorData: allValidStations,
+    });
+
+    const mostPopular = getMostPopular(
+      partition(validatedTrips).valid,
+      'departureStation'
+    );
+
+    const correctOrder = ['135', '3', '16', '19', '29'];
+    expect(mostPopular.length).toBe(5);
+    expect(mostPopular).toEqual(correctOrder);
+  });
+});

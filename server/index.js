@@ -6,7 +6,7 @@ const { PORT } = require('./util/config');
 const { connectToDatabase } = require('./util/db');
 const middleware = require('./util/middleware');
 
-const testRouter = require('./controllers/test');
+const testRouter = require('./controllers/apitest');
 const dataRouter = require('./controllers/datauploads');
 const tripRouter = require('./controllers/trips');
 const stationRouter = require('./controllers/stations');

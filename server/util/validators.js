@@ -69,7 +69,7 @@ const partition = (data) => {
   const invalid = [];
 
   data.forEach((element, index) => {
-    if (element === 'invalid') {
+    if (element === null) {
       invalid.push(index + 1);
     } else {
       valid.push(element);
