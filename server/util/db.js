@@ -6,6 +6,7 @@ const sequelize = new Sequelize(DATABASE_URL);
 
 const connectToDatabase = async () => {
   try {
+    console.log('authenticate');
     await sequelize.authenticate();
     await runMigrations();
     console.log('connected to the database');
