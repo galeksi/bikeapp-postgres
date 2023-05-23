@@ -6,7 +6,7 @@ const sequelize = new Sequelize(DATABASE_URL);
 
 const connectToDatabase = async () => {
   try {
-    console.log('authenticate');
+    console.log('connecting to database...');
     await sequelize.authenticate();
     await runMigrations();
     console.log('connected to the database');
@@ -40,4 +40,9 @@ const rollbackMigration = async () => {
   await migrator.down();
 };
 
-module.exports = { connectToDatabase, sequelize, rollbackMigration };
+module.exports = {
+  connectToDatabase,
+  sequelize,
+  runMigrations,
+  rollbackMigration,
+};
