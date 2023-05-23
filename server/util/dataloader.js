@@ -20,7 +20,6 @@ const readCsv = ({ path, options, validator, validatorData }) => {
         }
       })
       .on('end', () => {
-        // if (process.env.NODE_ENV === !'test') fs.unlinkSync(path);
         fs.unlinkSync(path);
         resolve(fileRows);
       });

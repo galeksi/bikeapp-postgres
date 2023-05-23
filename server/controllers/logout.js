@@ -4,9 +4,11 @@ const { Session } = require('../models/index');
 const { userAuthorisation } = require('../util/middleware');
 
 router.delete('/', userAuthorisation, async (req, res) => {
-  const token = req.decodedToken.token;
-  const session = await Session.findByPk(token);
-  await session.destroy();
+  await Session.destroy({
+    where: {
+      userId: req.decodedToken.id,
+    },
+  });
   res.status(204).end();
 });
 
