@@ -1,6 +1,8 @@
 const fs = require('fs').promises;
 const path = require('node:path');
 
+const { STATION_HEADER, TRIP_HEADER } = require('../util/constants');
+
 const readCsv = require('../util/dataloader');
 const {
   stationValidator,
@@ -12,32 +14,32 @@ const { calculateAvg, getMostPopular } = require('../util/helpers');
 const src = path.resolve(__dirname, './csv');
 const dest = path.resolve(__dirname, './tmp');
 
-const stationHeader = [
-  'fid',
-  'number',
-  'nimi',
-  'namn',
-  'name',
-  'osoite',
-  'adress',
-  'kaupunki',
-  'stad',
-  'operator',
-  'capacity',
-  'long',
-  'lat',
-];
+// const STATION_HEADER = [
+//   'fid',
+//   'number',
+//   'nimi',
+//   'namn',
+//   'name',
+//   'osoite',
+//   'adress',
+//   'kaupunki',
+//   'stad',
+//   'operator',
+//   'capacity',
+//   'long',
+//   'lat',
+// ];
 
-const tripHeader = [
-  'departure',
-  'return',
-  'departureStation',
-  'departureStationName',
-  'returnStation',
-  'returnStationName',
-  'distance',
-  'duration',
-];
+// const TRIP_HEADER = [
+//   'departure',
+//   'return',
+//   'departureStation',
+//   'departureStationName',
+//   'returnStation',
+//   'returnStationName',
+//   'distance',
+//   'duration',
+// ];
 
 let stations;
 let validatedStations;
@@ -56,7 +58,7 @@ beforeAll(async () => {
   stations = await readCsv({
     path: `${dest}/stations.csv`,
     options: {
-      headers: stationHeader,
+      headers: STATION_HEADER,
       renameHeaders: true,
     },
   });
@@ -65,7 +67,7 @@ beforeAll(async () => {
   const allStations = await readCsv({
     path: `${dest}/allValidStations.csv`,
     options: {
-      headers: stationHeader,
+      headers: STATION_HEADER,
       renameHeaders: true,
     },
   });
@@ -78,7 +80,7 @@ beforeAll(async () => {
   trips = await readCsv({
     path: `${dest}/trips.csv`,
     options: {
-      headers: tripHeader,
+      headers: TRIP_HEADER,
       renameHeaders: true,
     },
   });
@@ -88,12 +90,12 @@ beforeAll(async () => {
 describe('Reading and parsing csv files', () => {
   test('Parse stations', async () => {
     expect(stations.length).toBe(11);
-    expect(Object.keys(stations[0])).toEqual(stationHeader);
+    expect(Object.keys(stations[0])).toEqual(STATION_HEADER);
   });
 
   test('Parse trips', async () => {
     expect(trips.length).toBe(116);
-    expect(Object.keys(trips[0])).toEqual(tripHeader);
+    expect(Object.keys(trips[0])).toEqual(TRIP_HEADER);
   });
 });
 
@@ -162,7 +164,7 @@ describe('Read, parse, validate and partition stations and trips', () => {
     const validatedStations = await readCsv({
       path: `${dest}/stations.csv`,
       options: {
-        headers: stationHeader,
+        headers: STATION_HEADER,
         renameHeaders: true,
       },
       validator: stationValidator,
@@ -178,7 +180,7 @@ describe('Read, parse, validate and partition stations and trips', () => {
     const validatedTrips = await readCsv({
       path: `${dest}/trips.csv`,
       options: {
-        headers: tripHeader,
+        headers: TRIP_HEADER,
         renameHeaders: true,
       },
       validator: tripValidator,
@@ -203,7 +205,7 @@ describe('Test helper functions', () => {
     const validatedTrips = await readCsv({
       path: `${dest}/trips.csv`,
       options: {
-        headers: tripHeader,
+        headers: TRIP_HEADER,
         renameHeaders: true,
       },
       validator: tripValidator,

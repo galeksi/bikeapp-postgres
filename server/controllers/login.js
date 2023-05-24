@@ -37,7 +37,7 @@ router.post('/', async (req, res) => {
   };
 
   const token = jwt.sign(userForToken, SECRET);
-  Session.create({ token: token, userId: user.id });
+  await Session.create({ token: token, userId: user.id });
 
   res.status(200).send({ token, username: user.username, name: user.name });
 });

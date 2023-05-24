@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const { Station, Trip } = require('../models/index');
+const { STATION_HEADER, TRIP_HEADER } = require('../util/constants');
 
 const readCsv = require('../util/dataloader');
 const multer = require('multer');
@@ -13,39 +14,39 @@ const {
 } = require('../util/validators');
 
 // Custom headers to match mongoose schema for DB upload
-const stationHeader = [
-  'fid',
-  'number',
-  'nimi',
-  'namn',
-  'name',
-  'osoite',
-  'adress',
-  'kaupunki',
-  'stad',
-  'operator',
-  'capacity',
-  'long',
-  'lat',
-];
+// const STATION_HEADER = [
+//   'fid',
+//   'number',
+//   'nimi',
+//   'namn',
+//   'name',
+//   'osoite',
+//   'adress',
+//   'kaupunki',
+//   'stad',
+//   'operator',
+//   'capacity',
+//   'long',
+//   'lat',
+// ];
 
-const tripHeader = [
-  'departure',
-  'return',
-  'departureStation',
-  'departureStationName',
-  'returnStation',
-  'returnStationName',
-  'distance',
-  'duration',
-];
+// const TRIP_HEADER = [
+//   'departure',
+//   'return',
+//   'departureStation',
+//   'departureStationName',
+//   'returnStation',
+//   'returnStationName',
+//   'distance',
+//   'duration',
+// ];
 
 router.post('/stations', upload.single('file'), async (req, res) => {
   // Data is uploaded to tmp/csv and validated rows with new headers returned as objects
   const data = await readCsv({
     path: req.file.path,
     options: {
-      headers: stationHeader,
+      headers: STATION_HEADER,
       renameHeaders: true,
     },
     validator: stationValidator,
@@ -74,7 +75,7 @@ router.post('/trips', upload.single('file'), async (req, res) => {
   const data = await readCsv({
     path: req.file.path,
     options: {
-      headers: tripHeader,
+      headers: TRIP_HEADER,
       renameHeaders: true,
     },
     validator: tripValidator,

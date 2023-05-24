@@ -71,11 +71,6 @@ describe('User endpoints', () => {
     expect(response.body.username).toBe('arendel');
     expect(response.body.token).toBeDefined();
 
-    // await Session.destroy({
-    //   where: {
-    //     token: response.body.token,
-    //   },
-    // });
     await userLogout(response.body.token);
   });
 
@@ -143,17 +138,12 @@ describe('User endpoints', () => {
 
   test('admin can get all users', async () => {
     const token = await userLogin('arendel');
-    // console.log(token);
-    // const session = await Session.findAll();
-    // console.log(session);
 
     const response = await api
       .get('/api/users')
       .set('Authorization', `Bearer ${token}`)
       .expect(200)
       .expect('Content-Type', /application\/json/);
-
-    // console.log(response.body);
 
     expect(response.body).toHaveLength(users.length);
 
@@ -162,9 +152,6 @@ describe('User endpoints', () => {
 
   test('normal user cant get all users', async () => {
     const token = await userLogin('mpoppins');
-    // console.log(token);
-    // const session = await Session.findAll();
-    // console.log(session);
 
     await api
       .get('/api/users')
@@ -177,9 +164,6 @@ describe('User endpoints', () => {
 
   test('normal user can get own data', async () => {
     const token = await userLogin('mpoppins');
-    // console.log(token);
-    // const session = await Session.findAll();
-    // console.log(session);
 
     const response = await api
       .get('/api/users/3')
@@ -194,9 +178,6 @@ describe('User endpoints', () => {
 
   test('admin can disable user', async () => {
     const token = await userLogin('arendel');
-    console.log(token);
-    const session = await Session.findAll();
-    console.log(session);
 
     const body = {
       disabled: true,
@@ -208,8 +189,6 @@ describe('User endpoints', () => {
       .set('Authorization', `Bearer ${token}`)
       .expect(200)
       .expect('Content-Type', /application\/json/);
-
-    console.log(response.body);
 
     expect(response.body.disabled).toBe(true);
 
@@ -262,7 +241,6 @@ describe('Station endpoints', () => {
     };
 
     const token = await userLogin('arendel');
-    console.log(token);
 
     const response = await api
       .post('/api/stations/')
@@ -274,6 +252,12 @@ describe('Station endpoints', () => {
     expect(response.body.nimi).toBe('TEST');
     expect(response.body.id).toBe(11);
     expect(response.body.number).toBe(111);
+
+    await Station.destroy({
+      where: {
+        id: 11,
+      },
+    });
 
     await userLogout('arendel');
   });
@@ -297,8 +281,27 @@ describe('Station endpoints', () => {
   test('admin can delete unrefrenced station', async () => {
     const token = await userLogin('arendel');
 
+    const newStation = {
+      nimi: 'TODELETE',
+      namn: 'Västrahamnsgatan',
+      name: 'Länsisatamankatu',
+      osoite: 'Länsisatamankatu 19',
+      adress: 'Västrahamnsgatan 19',
+      kaupunki: 'Helsinki',
+      stad: 'Helsingfors',
+      operator: 'CityBike Finland',
+      capacity: 16,
+      long: 24.9096920006591,
+      lat: 60.158927591706,
+    };
+
+    const response = await api
+      .post('/api/stations/')
+      .send(newStation)
+      .set('Authorization', `Bearer ${token}`);
+
     await api
-      .delete('/api/stations/11')
+      .delete(`/api/stations/${response.body.id}`)
       .set('Authorization', `Bearer ${token}`)
       .expect(204);
 
@@ -312,9 +315,18 @@ describe('Station endpoints', () => {
 
 describe('Trip endpoints', () => {
   test('all trips are returned', async () => {
-    const response = await api.get('/api/trips');
+    const response = await api.get('/api/trips').expect(200);
 
     expect(response.body).toHaveLength(trips.length);
+  });
+
+  test('single trip is returned', async () => {
+    const response = await api
+      .get('/api/trips/1')
+      .expect(200)
+      .expect('Content-Type', /application\/json/);
+
+    expect(response.body.id).toBe(1);
   });
 });
 

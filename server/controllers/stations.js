@@ -43,24 +43,38 @@ router.get('/:id/stats', async (req, res) => {
       },
     });
 
-    const tripsByDeparture = [];
-    const tripsByReturn = [];
+    // console.log(tripsByStation.length);
+    // const tripsByDeparture = [];
+    // const tripsByReturn = [];
 
-    tripsByStation.map((s) => {
-      if (s.toJSON().departureStation === Number(id))
-        tripsByDeparture.push(s.toJSON());
-      if (s.toJSON().returnStation === Number(id))
-        tripsByReturn.push(s.toJSON());
-    });
+    // tripsByStation.map((s) => {
+    //   const json = s.toJSON();
+    //   console.log(json);
+    //   if (json.departureStation === Number(id)) tripsByDeparture.push(json);
+    //   if (json.returnStation === Number(id)) tripsByReturn.push(json);
+    // });
+    // console.log(tripsByDeparture);
+
+    const trips = tripsByStation.reduce(
+      (all, trip) => {
+        const json = trip.toJSON();
+        if (json.departureStation === Number(id)) all.departure.push(json);
+        if (json.returnStation === Number(id)) all.return.push(json);
+        return all;
+      },
+      { departure: [], return: [] }
+    );
+
+    // console.log(trips);
 
     res.json({
       stationId: id,
-      startTotal: tripsByDeparture.length,
-      returnTotal: tripsByReturn.length,
-      startAvg: calculateAvg(tripsByDeparture),
-      returnAvg: calculateAvg(tripsByReturn),
-      popularReturn: getMostPopular(tripsByDeparture, 'returnStation'),
-      popularDeparture: getMostPopular(tripsByReturn, 'departureStation'),
+      startTotal: trips.departure.length,
+      returnTotal: trips.return.length,
+      startAvg: calculateAvg(trips.departure),
+      returnAvg: calculateAvg(trips.return),
+      popularReturn: getMostPopular(trips.departure, 'returnStation'),
+      popularDeparture: getMostPopular(trips.return, 'departureStation'),
     });
   } else {
     res.status(404).end();
