@@ -44,7 +44,9 @@ const userAuthorisation = async (req, res, next) => {
 };
 
 const isAdmin = async (req, res, next) => {
+  console.log(req.decodedToken);
   const user = await User.findByPk(req.decodedToken.id);
+  console.log(user.toJSON());
   if (user.toJSON().admin) {
     req.admin = true;
   }
