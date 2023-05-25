@@ -6,7 +6,7 @@ const { userAuthorisation } = require('../util/middleware');
 router.delete('/', userAuthorisation, async (req, res) => {
   await Session.destroy({
     where: {
-      userId: req.decodedToken.id,
+      token: req.decodedToken.token,
     },
   });
   res.status(204).end();

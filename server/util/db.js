@@ -28,6 +28,7 @@ const migrationConf = {
 };
 
 const runMigrations = async () => {
+  console.log('run migrations');
   const migrator = new Umzug(migrationConf);
   const migrations = await migrator.up();
   console.log('Migrations up to date', {

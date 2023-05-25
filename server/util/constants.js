@@ -17,9 +17,9 @@ const STATION_HEADER = [
 const TRIP_HEADER = [
   'departure',
   'return',
-  'departureStation',
+  'departureStationNumber',
   'departureStationName',
-  'returnStation',
+  'returnStationNumber',
   'returnStationName',
   'distance',
   'duration',

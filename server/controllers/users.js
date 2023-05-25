@@ -21,6 +21,7 @@ router.post('/', async (req, res) => {
 });
 
 router.get('/', userAuthorisation, isAdmin, async (req, res) => {
+  console.log(req.decodedToken);
   if (!req.admin) {
     return res.status(401).json({
       'authorisation error': 'no admin',

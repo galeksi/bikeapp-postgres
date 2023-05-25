@@ -8,7 +8,11 @@ const stationValidator = (obj) => {
   if (obj.operator === ' ') obj.operator = 'CityBike Finland';
 
   // Station number and coordinates are validated
-  if (isNaN(Number(obj.number)) || Number(obj.number) <= 0) return null;
+  if (
+    isNaN(Number.parseFloat(obj.number)) ||
+    Number.parseFloat(obj.number) <= 0
+  )
+    return null;
   if (!isValidCoordinates(Number(obj.long), Number(obj.lat))) return null;
 
   return obj;
@@ -40,7 +44,7 @@ const tripValidator = (obj, stations) => {
 
   // Trips from and to stations are refrenced to stationdata from DB, otherwise discarded
   const depStation = stations.find(
-    (s) => s.number === Number(obj.departureStation)
+    (s) => s.number === Number(obj.departureStationNumber)
   );
   if (depStation) {
     obj.departureStation = depStation.id;
@@ -49,7 +53,7 @@ const tripValidator = (obj, stations) => {
   }
 
   const retStation = stations.find(
-    (s) => s.number === Number(obj.returnStation)
+    (s) => s.number === Number(obj.returnStationNumber)
   );
   if (retStation) {
     obj.returnStation = retStation.id;
@@ -58,6 +62,8 @@ const tripValidator = (obj, stations) => {
   }
 
   // Because departue and return stations are refrenced in database the fields are discarded
+  delete obj.departureStationNumber;
+  delete obj.returnStationNumber;
   delete obj.departureStationName;
   delete obj.returnStationName;
 
