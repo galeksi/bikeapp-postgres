@@ -76,6 +76,10 @@ describe('User endpoints', () => {
     expect(response.body.username).toBe('arendel');
     expect(response.body.token).toBeDefined();
 
+    const session = await Session.findByPk(response.body.token);
+
+    expect(session).toBeDefined();
+
     await userLogout(response.body.token);
   });
 
@@ -87,13 +91,9 @@ describe('User endpoints', () => {
       .set('Authorization', `Bearer ${token}`)
       .expect(204);
 
-    const session = await Session.findAll({
-      where: {
-        token: token,
-      },
-    });
+    const session = await Session.findByPk(token);
 
-    expect(session).toHaveLength(0);
+    expect(session.loggedOut).toBe(true);
   });
 
   test('New user can be created', async () => {
@@ -527,8 +527,6 @@ describe('Dataupload endpoint', () => {
       .expect(200)
       .expect('Content-Type', /application\/json/);
 
-    console.log(response.body);
-
     const allUpdatedStations = await Station.findAll();
 
     expect(response.body.uploads).toBe(6);
@@ -548,8 +546,6 @@ describe('Dataupload endpoint', () => {
       .attach('file', `${dest}/trips_api.csv`)
       .expect(200)
       .expect('Content-Type', /application\/json/);
-
-    console.log(response.body);
 
     const allUpdatedTrips = await Trip.findAll();
 

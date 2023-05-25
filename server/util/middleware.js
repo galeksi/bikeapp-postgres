@@ -38,9 +38,9 @@ const userAuthorisation = async (req, res, next) => {
   }
 
   const session = await Session.findByPk(authorization.substring(7));
-  if (!session) {
+  if (!session || session.loggedOut) {
     return res.status(401).json({
-      'authorisation error': 'Session expired, please login',
+      'authorisation error': 'No active session, please login',
     });
   }
   next();

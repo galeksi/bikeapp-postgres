@@ -127,21 +127,35 @@ router.put('/disabled/:id', userAuthorisation, isAdmin, async (req, res) => {
 
   const user = await User.findByPk(req.params.id);
 
-  if (user && user.disabled) {
-    user.disabled = req.body.disabled;
+  if (!user) {
+    return res.status(404).end();
+  }
+
+  if (req.body.disabled === false) {
+    user.disabled = false;
     await user.save();
+
     res.json(user);
-  } else if (user && user.disabled === false) {
-    user.disabled = req.body.disabled;
-    await Session.destroy({
+  } else if (req.body.disabled) {
+    user.disabled = true;
+    const updatedUser = await user.save();
+
+    const sessions = await Session.findAll({
       where: {
         userId: user.id,
       },
     });
-    const updatedUser = await user.save();
+
+    if (sessions) {
+      sessions.map((s) => {
+        s.loggedOut = true;
+        s.save();
+      });
+    }
+
     res.json(updatedUser);
   } else {
-    res.status(404).end();
+    res.status(400).end();
   }
 });
 
