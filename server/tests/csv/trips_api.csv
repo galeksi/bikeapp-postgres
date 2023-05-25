@@ -1,0 +1,15 @@
+Departure,Return,Departure station id,Departure station name,Return station id,Return station name,Covered distance (m),Duration (sec.)
+2021-07-31T23:59:59,2021-08-01T00:09:15,999,Pasilan asema,078,Messeniuksenkatu,1602,553
+2021-07-31T23:59:55,2021-08-01T00:08:45,997,Velodrominrinne,115,Venttiilikuja,1307,532
+2021-07-31T23:59:55,2021-08-01T00:03:24,754,Abraham Wetterin tie,101,Herttoniemi (M),820,205
+2021-07-31T23:59:47,2021-08-01T00:05:52,122,Lintulahdenkatu,102,Liisanpuistikko,1298,369
+2021-07-31T23:59:33,2021-08-01T00:14:49,126,Kalasatama (M),997,Laivalahden puistotie,3875,912
+2021-07-31T23:59:28,2021-08-01T00:06:23,101,Venttiilikuja,102,Karhupuisto,1482,410
+2021-07-31T23:59:22,2021-08-01T00:06:14,104,Sateenkaarentie,103,Puistolan asema,9,410
+2021-07-31T23:59:11,2021-08-01T00:06:11,104,Sateenkaarentie,103,Puistolan asema,1658,9
+noValidDate,2021-08-01T00:09:56,105,Töölönlahdenkatu,106,Lauttasaarensilta,3150,649
+2021-07-31T23:58:35,noValidDate,108,Kustaankatu,107,Munkkiniemen aukio,4835,1509
+2021-08-01T00:03:09,2021-07-31T23:58:30,101,Vilhonvuorenkatu,101,Sompasaari,865,273
+2021-07-31T23:58:28,2021-08-01T00:07:44,110,Mäkelänkatu,101,Intiankatu,NaN,552
+2021-07-31T23:58:13,2021-08-01T00:14:14,105,Eteläesplanadi,109,Marian sairaala,2352,NaN
+2021-07-31T23:58:13,2021-08-01T00:02:55,108,Petter Wetterin tie,109,Agnetankuja,880,277

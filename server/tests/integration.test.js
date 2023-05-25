@@ -1,3 +1,5 @@
+const fs = require('fs').promises;
+const path = require('node:path');
 const { connectToDatabase } = require('../util/db');
 const { sequelize, runMigrations } = require('../util/db');
 const supertest = require('supertest');
@@ -5,6 +7,9 @@ const app = require('../app');
 
 const { User, Station, Trip, Session } = require('../models/index');
 const { users, stations, trips } = require('./seeds');
+
+const src = path.resolve(__dirname, './csv');
+const dest = path.resolve(__dirname, './tmp');
 
 const api = supertest(app);
 
@@ -192,6 +197,10 @@ describe('User endpoints', () => {
 
     expect(response.body.disabled).toBe(true);
 
+    const disabledUser = await User.findByPk(3);
+    disabledUser.disabled = false;
+    await disabledUser.save();
+
     await userLogout(token);
   });
 });
@@ -223,9 +232,13 @@ describe('Station endpoints', () => {
       .expect('Content-Type', /application\/json/);
 
     expect(Object.keys(response.body)).toEqual(keys);
+    expect(response.body.popularReturn).toHaveLength(3);
+    expect(response.body.popularDeparture).toHaveLength(3);
   });
 
   test('admin can create new station', async () => {
+    const token = await userLogin('arendel');
+
     const newStation = {
       nimi: 'TEST',
       namn: 'Västrahamnsgatan',
@@ -239,8 +252,6 @@ describe('Station endpoints', () => {
       long: 24.9096920006591,
       lat: 60.158927591706,
     };
-
-    const token = await userLogin('arendel');
 
     const response = await api
       .post('/api/stations/')
@@ -259,11 +270,12 @@ describe('Station endpoints', () => {
       },
     });
 
-    await userLogout('arendel');
+    await userLogout(token);
   });
 
   test('admin can update station capacity', async () => {
     const token = await userLogin('arendel');
+
     const newCapacity = { capacity: 100 };
 
     const response = await api
@@ -275,7 +287,7 @@ describe('Station endpoints', () => {
 
     expect(response.body.capacity).toBe(100);
 
-    await userLogout('arendel');
+    await userLogout(token);
   });
 
   test('admin can delete unrefrenced station', async () => {
@@ -309,13 +321,16 @@ describe('Station endpoints', () => {
 
     expect(allStations).toHaveLength(10);
 
-    await userLogout('arendel');
+    await userLogout(token);
   });
 });
 
 describe('Trip endpoints', () => {
   test('all trips are returned', async () => {
-    const response = await api.get('/api/trips').expect(200);
+    const response = await api
+      .get('/api/trips')
+      .expect(200)
+      .expect('Content-Type', /application\/json/);
 
     expect(response.body).toHaveLength(trips.length);
   });
@@ -328,9 +343,223 @@ describe('Trip endpoints', () => {
 
     expect(response.body.id).toBe(1);
   });
+
+  test('trips are returned by departure query parameter', async () => {
+    const response = await api
+      .get('/api/trips?departureStation=1')
+      .expect(200)
+      .expect('Content-Type', /application\/json/);
+
+    expect(response.body).toHaveLength(3);
+    expect(response.body[0].departureStation).toBe(1);
+    expect(response.body[1].departureStation).toBe(1);
+    expect(response.body[2].departureStation).toBe(1);
+  });
+
+  test('trips are returned by return query parameter', async () => {
+    const response = await api
+      .get('/api/trips?returnStation=3')
+      .expect(200)
+      .expect('Content-Type', /application\/json/);
+
+    expect(response.body).toHaveLength(3);
+    expect(response.body[0].returnStation).toBe(3);
+    expect(response.body[1].returnStation).toBe(3);
+    expect(response.body[2].returnStation).toBe(3);
+  });
+
+  test('trips are returned by return and departure query parameter', async () => {
+    const response = await api
+      .get('/api/trips?returnStation=3&departureStation=3')
+      .expect(200)
+      .expect('Content-Type', /application\/json/);
+
+    expect(response.body).toHaveLength(1);
+    expect(response.body[0].departureStation).toBe(3);
+    expect(response.body[0].returnStation).toBe(3);
+  });
+
+  test('trips are returned by date query parameter', async () => {
+    const response = await api
+      .get('/api/trips?date=2021-08-31')
+      .expect(200)
+      .expect('Content-Type', /application\/json/);
+
+    expect(response.body).toHaveLength(2);
+    expect(response.body[0].departure).toContain('2021-08-31');
+    expect(response.body[1].departure).toContain('2021-08-31');
+  });
+
+  test('user can update duration of own trip', async () => {
+    const token = await userLogin('mpoppins');
+
+    const update = {
+      duration: 1000,
+    };
+
+    const response = await api
+      .put('/api/trips/8')
+      .send(update)
+      .set('Authorization', `Bearer ${token}`)
+      .expect(200)
+      .expect('Content-Type', /application\/json/);
+
+    expect(response.body.duration).toBe(1000);
+
+    await userLogout(token);
+  });
+
+  test('user can update duration, distance, departure and return', async () => {
+    const token = await userLogin('mpoppins');
+
+    const update = {
+      departure: '2021-08-30T20:59:33.000Z',
+      return: '2021-08-30T21:14:49.000Z',
+      distance: 1000,
+      duration: 1000,
+    };
+
+    const response = await api
+      .put('/api/trips/8')
+      .send(update)
+      .set('Authorization', `Bearer ${token}`)
+      .expect(200)
+      .expect('Content-Type', /application\/json/);
+
+    expect(response.body.departure).toBe('2021-08-30T20:59:33.000Z');
+    expect(response.body.return).toBe('2021-08-30T21:14:49.000Z');
+    expect(response.body.distance).toBe(1000);
+    expect(response.body.duration).toBe(1000);
+
+    await userLogout(token);
+  });
+
+  test('user can not update foreign trip', async () => {
+    const token = await userLogin('mpoppins');
+
+    const update = {
+      duration: 1000,
+    };
+
+    await api
+      .put('/api/trips/7')
+      .send(update)
+      .set('Authorization', `Bearer ${token}`)
+      .expect(401);
+
+    await userLogout(token);
+  });
+
+  test('admin can update foreign trip', async () => {
+    const token = await userLogin('arendel');
+
+    const update = {
+      duration: 1000,
+    };
+
+    const response = await api
+      .put('/api/trips/7')
+      .send(update)
+      .set('Authorization', `Bearer ${token}`)
+      .expect(200)
+      .expect('Content-Type', /application\/json/);
+
+    expect(response.body.duration).toBe(1000);
+
+    await userLogout(token);
+  });
+
+  test('user can delete own trip', async () => {
+    const token = await userLogin('mpoppins');
+
+    const allTrips = await Trip.findAll();
+
+    await api
+      .delete('/api/trips/8')
+      .set('Authorization', `Bearer ${token}`)
+      .expect(204);
+
+    const allUpdatedTrips = await Trip.findAll();
+
+    expect(allUpdatedTrips).toHaveLength(allTrips.length - 1);
+
+    await userLogout(token);
+  });
+
+  test('user can not delete foreign trip', async () => {
+    const token = await userLogin('mpoppins');
+
+    await api
+      .delete('/api/trips/1')
+      .set('Authorization', `Bearer ${token}`)
+      .expect(401);
+
+    await userLogout(token);
+  });
+
+  test('admin can delete oforeign trip', async () => {
+    const token = await userLogin('arendel');
+
+    const allTrips = await Trip.findAll();
+
+    await api
+      .delete('/api/trips/9')
+      .set('Authorization', `Bearer ${token}`)
+      .expect(204);
+
+    const allUpdatedTrips = await Trip.findAll();
+
+    expect(allUpdatedTrips).toHaveLength(allTrips.length - 1);
+
+    await userLogout(token);
+  });
 });
 
-describe('Dataupload endpoint', () => {});
+describe('Dataupload endpoint', () => {
+  test('stations can be uploaded', async () => {
+    await fs.copyFile(`${src}/stations.csv`, `${dest}/stations.csv`);
+
+    const allStations = await Station.findAll();
+
+    const response = await api
+      .post('/dataupload/stations')
+      .attach('file', `${dest}/stations.csv`)
+      .expect(200)
+      .expect('Content-Type', /application\/json/);
+
+    console.log(response.body);
+
+    const allUpdatedStations = await Station.findAll();
+
+    expect(response.body.uploads).toBe(6);
+    expect(response.body['invalid rows']).toHaveLength(4);
+    expect(allUpdatedStations).toHaveLength(allStations.length + 6);
+
+    await fs.unlink(`${dest}/stations.csv`);
+  });
+
+  test('trips can be uploaded', async () => {
+    await fs.copyFile(`${src}/trips_api.csv`, `${dest}/trips_api.csv`);
+
+    const allTrips = await Trip.findAll();
+
+    const response = await api
+      .post('/dataupload/trips')
+      .attach('file', `${dest}/trips_api.csv`)
+      .expect(200)
+      .expect('Content-Type', /application\/json/);
+
+    console.log(response.body);
+
+    const allUpdatedTrips = await Trip.findAll();
+
+    expect(response.body.uploaded).toBe(2);
+    expect(response.body['invalid rows']).toHaveLength(12);
+    expect(allUpdatedTrips).toHaveLength(allTrips.length + 2);
+
+    await fs.unlink(`${dest}/trips_api.csv`);
+  });
+});
 
 afterAll(async () => {
   await sequelize.close();

@@ -189,7 +189,7 @@ const trips = [
     userId: 1,
   },
   {
-    departure: '2021-07-31T20:59:59.000Z',
+    departure: '2021-08-31T20:59:59.000Z',
     return: '2021-07-31T21:09:15.000Z',
     distance: 1602,
     duration: 553,

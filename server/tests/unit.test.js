@@ -14,33 +14,6 @@ const { calculateAvg, getMostPopular } = require('../util/helpers');
 const src = path.resolve(__dirname, './csv');
 const dest = path.resolve(__dirname, './tmp');
 
-// const STATION_HEADER = [
-//   'fid',
-//   'number',
-//   'nimi',
-//   'namn',
-//   'name',
-//   'osoite',
-//   'adress',
-//   'kaupunki',
-//   'stad',
-//   'operator',
-//   'capacity',
-//   'long',
-//   'lat',
-// ];
-
-// const TRIP_HEADER = [
-//   'departure',
-//   'return',
-//   'departureStation',
-//   'departureStationName',
-//   'returnStation',
-//   'returnStationName',
-//   'distance',
-//   'duration',
-// ];
-
 let stations;
 let validatedStations;
 let trips;

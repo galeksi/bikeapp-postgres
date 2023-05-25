@@ -13,34 +13,6 @@ const {
   partition,
 } = require('../util/validators');
 
-// Custom headers to match mongoose schema for DB upload
-// const STATION_HEADER = [
-//   'fid',
-//   'number',
-//   'nimi',
-//   'namn',
-//   'name',
-//   'osoite',
-//   'adress',
-//   'kaupunki',
-//   'stad',
-//   'operator',
-//   'capacity',
-//   'long',
-//   'lat',
-// ];
-
-// const TRIP_HEADER = [
-//   'departure',
-//   'return',
-//   'departureStation',
-//   'departureStationName',
-//   'returnStation',
-//   'returnStationName',
-//   'distance',
-//   'duration',
-// ];
-
 router.post('/stations', upload.single('file'), async (req, res) => {
   // Data is uploaded to tmp/csv and validated rows with new headers returned as objects
   const data = await readCsv({
@@ -52,17 +24,20 @@ router.post('/stations', upload.single('file'), async (req, res) => {
     validator: stationValidator,
   });
 
+  const validatedData = partition(data);
   // Validated data is saved to the DB
-  const savedStations = await Station.bulkCreate(data, {
+  const savedStations = await Station.bulkCreate(validatedData.valid, {
     ignoreDuplicates: true,
   });
   // DB returns dublicates with ID null
   const duplicates = savedStations.filter((s) => s.toJSON().id === null).length;
 
   res.json({
-    'valid imports': data.length,
+    rows: data.length,
+    'valid data': validatedData.valid.length,
     duplicates: duplicates,
-    uploads: data.length - duplicates,
+    uploads: validatedData.valid.length - duplicates,
+    'invalid rows': validatedData.invalid,
   });
 });
 
@@ -100,7 +75,7 @@ router.post('/trips', upload.single('file'), async (req, res) => {
 
   res.json({
     'valid imports': validatedData.valid.length,
-    'uploaded imports': uploads.length,
+    uploaded: uploads.length,
     invalid: validatedData.invalid.length,
     'invalid rows': validatedData.invalid,
   });
