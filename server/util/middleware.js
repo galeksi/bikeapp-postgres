@@ -2,6 +2,10 @@ const jwt = require('jsonwebtoken');
 const { SECRET } = require('../util/config');
 const { Session, User } = require('../models/index');
 
+const unknownEndpoint = (req, res) => {
+  res.status(404).send({ error: 'unknown endpoint' });
+};
+
 const errorHandler = (error, req, res, next) => {
   console.error(error.message);
 
@@ -56,4 +60,4 @@ const isAdmin = async (req, res, next) => {
   next();
 };
 
-module.exports = { errorHandler, userAuthorisation, isAdmin };
+module.exports = { unknownEndpoint, errorHandler, userAuthorisation, isAdmin };

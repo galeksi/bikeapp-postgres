@@ -3,6 +3,7 @@ require('express-async-errors');
 const app = express();
 
 const middleware = require('./util/middleware');
+const cors = require('cors');
 
 const testRouter = require('./controllers/apitest');
 const dataRouter = require('./controllers/datauploads');
@@ -12,6 +13,8 @@ const userRouter = require('./controllers/users');
 const loginRouter = require('./controllers/login');
 const logoutRouter = require('./controllers/logout');
 
+app.use(cors());
+app.use(express.static('client/build'));
 app.use(express.json());
 
 app.use('/api/test', testRouter);
@@ -22,6 +25,7 @@ app.use('/api/users', userRouter);
 app.use('/api/login', loginRouter);
 app.use('/api/logout', logoutRouter);
 
+app.use(middleware.unknownEndpoint);
 app.use(middleware.errorHandler);
 
 module.exports = app;
