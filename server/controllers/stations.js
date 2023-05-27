@@ -43,18 +43,6 @@ router.get('/:id/stats', async (req, res) => {
       },
     });
 
-    // console.log(tripsByStation.length);
-    // const tripsByDeparture = [];
-    // const tripsByReturn = [];
-
-    // tripsByStation.map((s) => {
-    //   const json = s.toJSON();
-    //   console.log(json);
-    //   if (json.departureStation === Number(id)) tripsByDeparture.push(json);
-    //   if (json.returnStation === Number(id)) tripsByReturn.push(json);
-    // });
-    // console.log(tripsByDeparture);
-
     const trips = tripsByStation.reduce(
       (all, trip) => {
         const json = trip.toJSON();
@@ -64,8 +52,6 @@ router.get('/:id/stats', async (req, res) => {
       },
       { departure: [], return: [] }
     );
-
-    // console.log(trips);
 
     res.json({
       stationId: id,

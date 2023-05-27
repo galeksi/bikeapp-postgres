@@ -14,11 +14,11 @@ const loginRouter = require('./controllers/login');
 const logoutRouter = require('./controllers/logout');
 
 app.use(cors());
-app.use(express.static('client/build'));
 app.use(express.json());
+if (process.env.NODE_ENV === 'production') app.use(express.static('client/build'));
 
 app.use('/api/test', testRouter);
-app.use('/dataupload', dataRouter);
+app.use('/api/dataupload', dataRouter);
 app.use('/api/trips', tripRouter);
 app.use('/api/stations', stationRouter);
 app.use('/api/users', userRouter);

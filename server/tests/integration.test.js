@@ -522,7 +522,7 @@ describe('Dataupload endpoint', () => {
     const allStations = await Station.findAll();
 
     const response = await api
-      .post('/dataupload/stations')
+      .post('/api/dataupload/stations')
       .attach('file', `${dest}/stations.csv`)
       .expect(200)
       .expect('Content-Type', /application\/json/);
@@ -542,7 +542,7 @@ describe('Dataupload endpoint', () => {
     const allTrips = await Trip.findAll();
 
     const response = await api
-      .post('/dataupload/trips')
+      .post('/api/dataupload/trips')
       .attach('file', `${dest}/trips_api.csv`)
       .expect(200)
       .expect('Content-Type', /application\/json/);

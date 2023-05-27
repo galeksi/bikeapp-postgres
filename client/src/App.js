@@ -13,8 +13,17 @@ const App = () => {
   // Fetching all Stations from DB to serve all routes
 
   useEffect(() => {
-    stationService.getAll().then((stations) => setStations(stations));
+    const fetchStations = async () => {
+      const allStations = await stationService.getAll();
+      setStations(allStations);
+    };
+    fetchStations();
+    // stationService.getAll().then((stations) => setStations(stations));
   }, []);
+
+  if (stations.length === 0) {
+    return <h1>Loading...</h1>;
+  }
 
   return (
     <div>

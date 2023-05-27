@@ -6,6 +6,9 @@
   "scripts": {
     "start": "cross-env NODE_ENV=production node server/index.js",
     "dev": "cross-env NODE_ENV=development nodemon server/index.js",
+    "build:ui": "cd client && npm run build",
+    "deploy": "fly deploy",
+    "deploy:full": "npm run build:ui && npm run deploy",
     "migration:down": "node server/scripts/rollback.js",
     "lint": "eslint .",
     "test": "cross-env NODE_ENV=test jest --verbose"
