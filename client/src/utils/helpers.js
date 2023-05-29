@@ -9,3 +9,10 @@ export const paginationLoader = (data, currentPage, itemsPerPage) => {
     pageCount: pageCount,
   };
 };
+
+export const setToken = (newToken) => {
+  const config = {
+    headers: { Authorization: `bearer ${newToken}` },
+  };
+  return config;
+};
