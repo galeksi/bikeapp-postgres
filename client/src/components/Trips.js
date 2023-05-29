@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import tripService from '../services/trips';
 import ReactPaginate from 'react-paginate';
@@ -13,9 +14,9 @@ const Trips = ({ stations }) => {
   const [allTrips, setTrips] = useState([]);
   const [filteredTrips, setFilteredTrips] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
-  const [departureFilter, setDepartureFilter] = useState(undefined);
-  const [returnFilter, setReturnFilter] = useState(undefined);
-  const [startDate, setStartDate] = useState(undefined);
+  const [departureFilter, setDepartureFilter] = useState();
+  const [returnFilter, setReturnFilter] = useState();
+  const [startDate, setStartDate] = useState();
 
   // Sets options for dropdown select to filter departure and return stations
   const stationOptions = stations.map((s) => ({
@@ -60,9 +61,9 @@ const Trips = ({ stations }) => {
   // Clears filter and sets State for rerender
   const clearFilter = () => {
     setFilteredTrips([]);
-    setDepartureFilter(undefined);
-    setReturnFilter(undefined);
-    setStartDate(undefined);
+    setDepartureFilter();
+    setReturnFilter();
+    setStartDate();
   };
 
   return (
@@ -140,7 +141,11 @@ const Trips = ({ stations }) => {
             tripsToView.items.map((t) => (
               <tr key={t.id}>
                 <td>{t.forDeparture.nimi}</td>
-                <td>{t.forDeparture.number}</td>
+                <td>
+                  <Link to={`/station/${t.forDeparture.id}`}>
+                    {t.forDeparture.number}
+                  </Link>
+                </td>
                 <td>{new Date(t.departure).toLocaleDateString('fi-FI')}</td>
                 <td>
                   {new Date(t.departure).toLocaleTimeString([], {
@@ -149,7 +154,11 @@ const Trips = ({ stations }) => {
                   })}
                 </td>
                 <td>{t.forReturn.nimi}</td>
-                <td>{t.forReturn.number}</td>
+                <td>
+                  <Link to={`/station/${t.forReturn.id}`}>
+                    {t.forReturn.number}
+                  </Link>
+                </td>
                 <td>{(t.duration / 60).toFixed(0)}&nbsp;min</td>
                 <td>{(t.distance / 1000).toFixed(1)}&nbsp;km</td>
               </tr>

@@ -12,6 +12,7 @@ import Error from './components/Error';
 import stationService from './services/stations';
 import loginService from './services/login';
 import logoutService from './services/logout';
+import Signup from './components/Signup';
 
 const App = () => {
   const [stations, setStations] = useState([]);
@@ -24,20 +25,21 @@ const App = () => {
   const navigate = useNavigate();
 
   // Fetching all Stations from DB to serve all routes
-  const fetchStations = async () => {
-    const allStations = await stationService.getAll();
-    setStations(allStations);
-  };
-
-  const checkUser = () => {
-    const loggedUserJSON = window.localStorage.getItem('loggedUser');
-    if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON);
-      setUser(user);
-    }
-  };
 
   useEffect(() => {
+    const fetchStations = async () => {
+      const allStations = await stationService.getAll();
+      setStations(allStations);
+    };
+
+    const checkUser = () => {
+      const loggedUserJSON = window.localStorage.getItem('loggedUser');
+      if (loggedUserJSON) {
+        const user = JSON.parse(loggedUserJSON);
+        setUser(user);
+      }
+    };
+
     fetchStations();
     checkUser();
   }, []);
@@ -78,33 +80,46 @@ const App = () => {
     }
   };
 
-  const loginForm = () => (
-    <form onSubmit={handleLogin}>
+  const userAuth =
+    user === null ? (
       <div>
-        username
-        <input
-          id="username"
-          type="text"
-          value={username}
-          name="Username"
-          onChange={({ target }) => setUsername(target.value)}
-        />
+        <Togglable buttonLabel={'Login'} buttonLabelBack={'cancel'}>
+          <form onSubmit={handleLogin}>
+            <div>
+              username
+              <input
+                id="username"
+                type="text"
+                value={username}
+                name="Username"
+                onChange={({ target }) => setUsername(target.value)}
+              />
+            </div>
+            <div>
+              password
+              <input
+                id="password"
+                type="password"
+                value={password}
+                name="Password"
+                onChange={({ target }) => setPassword(target.value)}
+              />
+            </div>
+            <button id="login-button" type="submit">
+              login
+            </button>
+          </form>
+        </Togglable>
+        <Link to={'/signup'}>Register</Link>
       </div>
+    ) : (
       <div>
-        password
-        <input
-          id="password"
-          type="password"
-          value={password}
-          name="Password"
-          onChange={({ target }) => setPassword(target.value)}
-        />
+        <p>
+          <Link to={`/user/${user.username}`}>PROFILE</Link>
+          <button onClick={handleLogout}>Logout</button>
+        </p>
       </div>
-      <button id="login-button" type="submit">
-        login
-      </button>
-    </form>
-  );
+    );
 
   if (stations.length === 0) {
     return <h1>Loading...</h1>;
@@ -114,21 +129,7 @@ const App = () => {
     <div>
       <div>
         <div>
-          {user === null ? (
-            <div>
-              <Togglable buttonLabel={'Login'} buttonLabelBack={'cancel'}>
-                {loginForm()}
-              </Togglable>
-            </div>
-          ) : (
-            <div>
-              <p>
-                Hi, {user.name}
-                <Link to={`/user/${user.username}`}>PROFILE</Link>
-                <button onClick={handleLogout}>Logout</button>
-              </p>
-            </div>
-          )}
+          {userAuth}
           <h1>BIKEAPP 2023</h1>
           <div>
             <Link to="/">STATIONS </Link>
@@ -140,11 +141,31 @@ const App = () => {
 
         <Routes>
           <Route path="/" element={<StationList stations={stations} />} />
-          <Route path="/user/:username" element={<User user={user} />} />
+          <Route
+            path="/user/:username"
+            element={
+              <User
+                user={user}
+                stations={stations}
+                setNotification={setNotification}
+                setErrorMessage={setErrorMessage}
+              />
+            }
+          />
           <Route path="/trips" element={<Trips stations={stations} />} />
           <Route
             path="/station/:id"
             element={<Station stations={stations} />}
+          />
+          <Route
+            path="/signup"
+            element={
+              <Signup
+                setUser={setUser}
+                setNotification={setNotification}
+                setErrorMessage={setErrorMessage}
+              />
+            }
           />
         </Routes>
       </div>

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { setToken } from '../utils/helpers';
+import { createAuthHeader } from '../utils/helpers';
 const baseUrl = '/api/stations';
 
 const getAll = async () => {
@@ -13,17 +13,28 @@ const getStats = async (id) => {
 };
 
 const create = async (token, newStation) => {
-  const response = await axios.post(baseUrl, newStation, setToken(token));
+  const response = await axios.post(
+    baseUrl,
+    newStation,
+    createAuthHeader(token)
+  );
   return response.data;
 };
 
 const update = async (id, token, update) => {
-  const response = await axios.put(`${baseUrl}/${id}`, update, setToken(token));
+  const response = await axios.put(
+    `${baseUrl}/${id}`,
+    update,
+    createAuthHeader(token)
+  );
   return response.data;
 };
 
 const destroy = async (id, token) => {
-  const response = await axios.delete(`${baseUrl}/${id}`, setToken(token));
+  const response = await axios.delete(
+    `${baseUrl}/${id}`,
+    createAuthHeader(token)
+  );
   return response.data;
 };
 

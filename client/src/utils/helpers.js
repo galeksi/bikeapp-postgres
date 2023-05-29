@@ -10,7 +10,7 @@ export const paginationLoader = (data, currentPage, itemsPerPage) => {
   };
 };
 
-export const setToken = (newToken) => {
+export const createAuthHeader = (newToken) => {
   const config = {
     headers: { Authorization: `bearer ${newToken}` },
   };

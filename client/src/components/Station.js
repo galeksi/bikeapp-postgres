@@ -7,26 +7,26 @@ import stationService from '../services/stations';
 import '../styles/map.css';
 
 const Station = ({ stations }) => {
-  const [station, setStation] = useState(undefined);
+  const [station, setStation] = useState();
   const id = useParams().id;
 
-  const fetchStationData = async () => {
-    const station = stations.find((s) => s.id === Number(id));
-    const statistics = await stationService.getStats(id);
-
-    station.stats = statistics;
-    station.returnStations = statistics.popularReturn.map((ret) =>
-      stations.find((s) => s.id === Number(ret))
-    );
-    station.departureStations = statistics.popularDeparture.map((dep) =>
-      stations.find((s) => s.id === Number(dep))
-    );
-    station.center = { lat: Number(station.lat), lng: Number(station.long) };
-
-    setStation(station);
-  };
-
   useEffect(() => {
+    const fetchStationData = async () => {
+      const station = stations.find((s) => s.id === Number(id));
+      const statistics = await stationService.getStats(id);
+
+      station.stats = statistics;
+      station.returnStations = statistics.popularReturn.map((ret) =>
+        stations.find((s) => s.id === Number(ret))
+      );
+      station.departureStations = statistics.popularDeparture.map((dep) =>
+        stations.find((s) => s.id === Number(dep))
+      );
+      station.center = { lat: Number(station.lat), lng: Number(station.long) };
+
+      setStation(station);
+    };
+
     fetchStationData();
   }, []);
 
@@ -39,22 +39,24 @@ const Station = ({ stations }) => {
     return <h1>Loading...</h1>;
   }
 
+  const googleMap = isLoaded ? (
+    <GoogleMap
+      mapContainerClassName="map-container-station"
+      center={station.center}
+      zoom={15}
+    >
+      <Marker position={station.center} />
+    </GoogleMap>
+  ) : (
+    <h1>Loading...</h1>
+  );
+
   return (
     <div>
       <h1>
         Station Nr {station.number}: {station.nimi}
       </h1>
-      {!isLoaded ? (
-        <h1>Loading...</h1>
-      ) : (
-        <GoogleMap
-          mapContainerClassName="map-container-station"
-          center={station.center}
-          zoom={15}
-        >
-          <Marker position={station.center} />
-        </GoogleMap>
-      )}
+      {googleMap}
       <div>
         <div>
           <h2>

@@ -15,7 +15,7 @@ import '../styles/pagination.css';
 
 const StationList = ({ stations }) => {
   const [currentPage, setCurrentPage] = useState(0);
-  const [searchedStations, setSearchedStations] = useState('');
+  const [searchedStations, setSearchedStations] = useState();
   const [search, setSearch] = useState('');
   const [mapRef, setMapRef] = useState();
   const [isOpen, setIsOpen] = useState(false);
@@ -27,7 +27,7 @@ const StationList = ({ stations }) => {
   });
 
   // Decides if all stations or search result is added for pagination and initial view
-  const allStations = searchedStations === '' ? stations : searchedStations;
+  const allStations = searchedStations ?? stations;
   const stationsToView = paginationLoader(allStations, currentPage, 20);
 
   // Google maps markers location and info
@@ -75,67 +75,57 @@ const StationList = ({ stations }) => {
 
   // Clears search and sets state for rerender of all stations
   const clearSearch = () => {
-    setSearchedStations('');
+    setSearchedStations(undefined);
     setSearch('');
   };
+
+  const googleMap = isLoaded ? (
+    <GoogleMap
+      mapContainerClassName="map-container"
+      onLoad={onMapLoad}
+      onClick={() => setIsOpen(false)}
+    >
+      {markers.map(({ lat, lng, name, number, address, capacity }, ind) => (
+        <Marker
+          key={ind}
+          position={{ lat, lng }}
+          onClick={() => {
+            handleMarkerClick(ind, lat, lng, name, number, address, capacity);
+          }}
+        >
+          {isOpen && infoWindowData?.id === ind && (
+            <InfoWindow
+              onCloseClick={() => {
+                setIsOpen(false);
+              }}
+            >
+              <div>
+                <h3>
+                  {infoWindowData.number}&nbsp;-&nbsp;
+                  {infoWindowData.name}
+                </h3>
+                <p>
+                  {infoWindowData.address}
+                  <br />
+                  <em>
+                    Capacity:&nbsp;{infoWindowData.capacity}
+                    &nbsp;bikes
+                  </em>
+                </p>
+              </div>
+            </InfoWindow>
+          )}
+        </Marker>
+      ))}
+    </GoogleMap>
+  ) : (
+    <h1>Loading...</h1>
+  );
 
   return (
     <div>
       <h2>Stations</h2>
-      <div>
-        {!isLoaded ? (
-          <h1>Loading...</h1>
-        ) : (
-          <GoogleMap
-            mapContainerClassName="map-container"
-            onLoad={onMapLoad}
-            onClick={() => setIsOpen(false)}
-          >
-            {markers.map(
-              ({ lat, lng, name, number, address, capacity }, ind) => (
-                <Marker
-                  key={ind}
-                  position={{ lat, lng }}
-                  onClick={() => {
-                    handleMarkerClick(
-                      ind,
-                      lat,
-                      lng,
-                      name,
-                      number,
-                      address,
-                      capacity
-                    );
-                  }}
-                >
-                  {isOpen && infoWindowData?.id === ind && (
-                    <InfoWindow
-                      onCloseClick={() => {
-                        setIsOpen(false);
-                      }}
-                    >
-                      <div>
-                        <h3>
-                          {infoWindowData.number}&nbsp;-&nbsp;
-                          {infoWindowData.name}
-                        </h3>
-                        <p>
-                          {infoWindowData.address}
-                          <br />
-                          <em>
-                            Capacity:&nbsp;{infoWindowData.capacity}
-                            &nbsp;bikes
-                          </em>
-                        </p>
-                      </div>
-                    </InfoWindow>
-                  )}
-                </Marker>
-              )
-            )}
-          </GoogleMap>
-        )}
-      </div>
+      {googleMap}
       <div>
         <div>
           <form onSubmit={searchStations}>

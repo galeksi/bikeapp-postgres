@@ -4,8 +4,8 @@ import { PropTypes } from 'prop-types';
 const Togglable = (props) => {
   const [visible, setVisible] = useState(false);
 
-  const hideWhenVisible = { display: visible ? 'none' : '' };
-  const showWhenVisible = { display: visible ? '' : 'none' };
+  const hideWhenVisible = visible ? { display: 'none' } : {};
+  const showWhenVisible = visible ? {} : { display: 'none' };
 
   const toggleVisibility = () => {
     setVisible(!visible);
