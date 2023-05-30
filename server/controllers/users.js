@@ -21,7 +21,6 @@ router.post('/', async (req, res) => {
 });
 
 router.get('/', userAuthorisation, isAdmin, async (req, res) => {
-  console.log(req.decodedToken);
   if (!req.admin) {
     return res.status(401).json({
       'authorisation error': 'no admin',
@@ -154,6 +153,34 @@ router.put('/disabled/:id', userAuthorisation, isAdmin, async (req, res) => {
     }
 
     res.json(updatedUser);
+  } else {
+    res.status(400).end();
+  }
+});
+
+router.put('/admin/:id', userAuthorisation, isAdmin, async (req, res) => {
+  if (!req.admin) {
+    return res.status(401).json({
+      'authorisation error': 'no admin',
+    });
+  }
+
+  const user = await User.findByPk(req.params.id);
+
+  if (!user) {
+    return res.status(404).end();
+  }
+
+  if (req.body.admin === false) {
+    user.admin = false;
+    await user.save();
+
+    res.json(user);
+  } else if (req.body.admin) {
+    user.admin = true;
+
+    await user.save();
+    res.json(user);
   } else {
     res.status(400).end();
   }

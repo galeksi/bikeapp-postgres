@@ -42,6 +42,15 @@ const disable = async (id, token, update) => {
   return response.data;
 };
 
+const admin = async (id, token, update) => {
+  const response = await axios.put(
+    `${baseUrl}/admin/${id}`,
+    update,
+    createAuthHeader(token)
+  );
+  return response.data;
+};
+
 const destroy = async (id, token) => {
   const response = await axios.delete(
     `${baseUrl}/${id}`,
@@ -57,5 +66,6 @@ export default {
   update,
   updatePassword,
   disable,
+  admin,
   destroy,
 };

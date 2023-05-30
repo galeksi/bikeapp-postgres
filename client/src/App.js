@@ -1,5 +1,6 @@
 import { Routes, Route, Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import jwt_decode from 'jwt-decode';
 
 import Station from './components/Station';
 import StationList from './components/StationList';
@@ -24,8 +25,6 @@ const App = () => {
 
   const navigate = useNavigate();
 
-  // Fetching all Stations from DB to serve all routes
-
   useEffect(() => {
     const fetchStations = async () => {
       const allStations = await stationService.getAll();
@@ -36,7 +35,15 @@ const App = () => {
       const loggedUserJSON = window.localStorage.getItem('loggedUser');
       if (loggedUserJSON) {
         const user = JSON.parse(loggedUserJSON);
-        setUser(user);
+        const decodedToken = jwt_decode(user.token);
+        const currentDate = new Date();
+
+        if (decodedToken.exp * 1000 < currentDate.getTime()) {
+          setNotification('Session expired, please login.');
+          setTimeout(() => setNotification(null), 5000);
+        } else {
+          setUser(user);
+        }
       }
     };
 
@@ -58,6 +65,7 @@ const App = () => {
       setPassword('');
       setNotification(`${user.name} succesfully logged in`);
       setTimeout(() => setNotification(null), 5000);
+      navigate('/');
     } catch (exception) {
       setErrorMessage('Wrong credentials');
       setTimeout(() => setErrorMessage(null), 5000);
@@ -147,6 +155,7 @@ const App = () => {
               <User
                 user={user}
                 stations={stations}
+                setStations={setStations}
                 setNotification={setNotification}
                 setErrorMessage={setErrorMessage}
               />

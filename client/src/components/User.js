@@ -4,18 +4,31 @@ import PropTypes from 'prop-types';
 import AdminPanel from './AdminPanel';
 import Togglable from './Togglable';
 import userService from '../services/users';
+import tripService from '../services/trips';
+import Select from 'react-select';
 
-const User = ({ user, stations, setNotification, setErrorMessage }) => {
+const User = ({
+  user,
+  stations,
+  setStations,
+  setNotification,
+  setErrorMessage,
+}) => {
   const [profile, setProfile] = useState([]);
+
   const [password, setPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
 
+  const [departureStation, setDepartureStation] = useState({});
+  const [returnStation, setReturnStation] = useState({});
+  const [departureTime, setDepartureTime] = useState('');
+  const [returnTime, setReturnTime] = useState('');
+  const [distance, setDistance] = useState(0);
+
   if (user === null) {
     return <h1>Access denied!</h1>;
   }
-
-  console.log(stations);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -24,6 +37,11 @@ const User = ({ user, stations, setNotification, setErrorMessage }) => {
     };
     fetchProfile();
   }, []);
+
+  const stationOptions = stations.map((s) => ({
+    value: s.id,
+    label: `${s.number} - ${s.nimi}`,
+  }));
 
   const updatePassword = async (event) => {
     event.preventDefault();
@@ -45,17 +63,61 @@ const User = ({ user, stations, setNotification, setErrorMessage }) => {
       setNotification('Password updated');
       setTimeout(() => setNotification(null), 5000);
     } catch (exception) {
-      console.log(exception);
       setErrorMessage('Update failed');
       setTimeout(() => setErrorMessage(null), 5000);
     }
   };
 
   const adminPanel = user.admin ? (
-    <AdminPanel admin={user} setErrorMessage={setErrorMessage} />
+    <AdminPanel
+      admin={user}
+      stations={stations}
+      setStations={setStations}
+      setErrorMessage={setErrorMessage}
+      setNotification={setNotification}
+    />
   ) : (
     <></>
   );
+
+  const addTrip = async (event) => {
+    event.preventDefault();
+    const durationInMinutes =
+      (Date.parse(returnTime) - Date.parse(departureTime)) / 1000;
+
+    if (durationInMinutes <= 0) {
+      setNotification('Return must be later than return!');
+      setTimeout(() => setNotification(null), 5000);
+      return null;
+    }
+
+    const trip = {
+      departure: departureTime,
+      return: returnTime,
+      departureStation: departureStation.value,
+      returnStation: returnStation.value,
+      distance: Number(distance) * 1000,
+      duration: durationInMinutes,
+      userId: user.id,
+    };
+
+    try {
+      const newTrip = await tripService.create(user.token, trip);
+      setProfile({ ...profile, trips: profile.trips.concat(newTrip) });
+
+      setDepartureStation({});
+      setReturnStation({});
+      setDepartureTime('');
+      setReturnTime('');
+      setDistance(0);
+
+      setNotification('New trip added!');
+      setTimeout(() => setNotification(null), 5000);
+    } catch (exception) {
+      setErrorMessage('Update failed');
+      setTimeout(() => setErrorMessage(null), 5000);
+    }
+  };
 
   const passwordForm = (
     <form onSubmit={updatePassword}>
@@ -87,6 +149,106 @@ const User = ({ user, stations, setNotification, setErrorMessage }) => {
     </form>
   );
 
+  const newTripForm = (
+    <form onSubmit={addTrip}>
+      <p>Departure:</p>
+      <Select
+        id="departurestation"
+        classNamePrefix="Departure..."
+        value={departureStation}
+        isClearable={true}
+        isSearchable={true}
+        placeholder="Departure station"
+        options={stationOptions}
+        onChange={setDepartureStation}
+      />
+      <input
+        type="datetime-local"
+        id="time-departure"
+        name="time-departure"
+        value={departureTime}
+        onChange={({ target }) => setDepartureTime(target.value)}
+      ></input>
+      <p>Return:</p>
+      <Select
+        id="returnstation"
+        classNamePrefix="Return..."
+        value={returnStation}
+        isClearable={true}
+        isSearchable={true}
+        placeholder="Return station"
+        options={stationOptions}
+        onChange={setReturnStation}
+      />
+      <input
+        type="datetime-local"
+        id="time-return"
+        name="time-return"
+        value={returnTime}
+        onChange={({ target }) => setReturnTime(target.value)}
+      ></input>
+      <p>Distance:</p>
+      <input
+        type="number"
+        name="distance"
+        placeholder="Distance"
+        min="1"
+        max="100"
+        step=".1"
+        value={distance}
+        onChange={({ target }) => setDistance(target.value)}
+      ></input>
+      <button type={'submit'}>Add trip</button>
+    </form>
+  );
+
+  const tripsTable = (
+    <table>
+      <thead>
+        <tr>
+          <th>Departure station</th>
+          <th>Date</th>
+          <th>Time</th>
+          <th>Return Station</th>
+          <th>Duration</th>
+          <th>Distance</th>
+        </tr>
+      </thead>
+      <tbody>
+        {profile.trips &&
+          profile.trips.map((t) => (
+            <tr key={t.id}>
+              <td>
+                <Link to={`/station/${t.departureStation}`}>
+                  {
+                    stationOptions.find((s) => s.value === t.departureStation)
+                      .label
+                  }
+                </Link>
+              </td>
+              <td>{new Date(t.departure).toLocaleDateString('fi-FI')}</td>
+              <td>
+                {new Date(t.departure).toLocaleTimeString([], {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })}
+              </td>
+              <td>
+                <Link to={`/station/${t.returnStation}`}>
+                  {
+                    stationOptions.find((s) => s.value === t.returnStation)
+                      .label
+                  }
+                </Link>
+              </td>
+              <td>{(t.duration / 60).toFixed(0)}&nbsp;min</td>
+              <td>{(t.distance / 1000).toFixed(1)}&nbsp;km</td>
+            </tr>
+          ))}
+      </tbody>
+    </table>
+  );
+
   return (
     <div>
       <div>
@@ -97,48 +259,10 @@ const User = ({ user, stations, setNotification, setErrorMessage }) => {
             {passwordForm}
           </Togglable>
         </h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Departure station</th>
-              <th>Station Nr</th>
-              <th>Date</th>
-              <th>Time</th>
-              <th>Return Station</th>
-              <th>Station Nr</th>
-              <th>Duration</th>
-              <th>Distance</th>
-            </tr>
-          </thead>
-          <tbody>
-            {profile.trips &&
-              profile.trips.map((t) => (
-                <tr key={t.id}>
-                  <td>{t.forDeparture.nimi}</td>
-                  <td>
-                    <Link to={`/station/${t.forDeparture.id}`}>
-                      {t.forDeparture.number}
-                    </Link>
-                  </td>
-                  <td>{new Date(t.departure).toLocaleDateString('fi-FI')}</td>
-                  <td>
-                    {new Date(t.departure).toLocaleTimeString([], {
-                      hour: '2-digit',
-                      minute: '2-digit',
-                    })}
-                  </td>
-                  <td>{t.forReturn.nimi}</td>
-                  <td>
-                    <Link to={`/station/${t.forReturn.id}`}>
-                      {t.forReturn.number}
-                    </Link>
-                  </td>
-                  <td>{(t.duration / 60).toFixed(0)}&nbsp;min</td>
-                  <td>{(t.distance / 1000).toFixed(1)}&nbsp;km</td>
-                </tr>
-              ))}
-          </tbody>
-        </table>
+        <h3>Add trip</h3>
+        {newTripForm}
+        <h3>Your trips</h3>
+        {tripsTable}
       </div>
       {adminPanel}
     </div>
@@ -148,6 +272,7 @@ const User = ({ user, stations, setNotification, setErrorMessage }) => {
 User.propTypes = {
   user: PropTypes.object,
   stations: PropTypes.array,
+  setStations: PropTypes.func,
   setNotification: PropTypes.func,
   setErrorMessage: PropTypes.func,
 };

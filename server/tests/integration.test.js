@@ -497,7 +497,7 @@ describe('Trip endpoints', () => {
     await userLogout(token);
   });
 
-  test('admin can delete oforeign trip', async () => {
+  test('admin can delete foreign trip', async () => {
     const token = await userLogin('arendel');
 
     const allTrips = await Trip.findAll();
@@ -517,12 +517,14 @@ describe('Trip endpoints', () => {
 
 describe('Dataupload endpoint', () => {
   test('stations can be uploaded', async () => {
+    const token = await userLogin('arendel');
     await fs.copyFile(`${src}/stations.csv`, `${dest}/stations.csv`);
 
     const allStations = await Station.findAll();
 
     const response = await api
       .post('/api/dataupload/stations')
+      .set('Authorization', `Bearer ${token}`)
       .attach('file', `${dest}/stations.csv`)
       .expect(200)
       .expect('Content-Type', /application\/json/);
@@ -534,15 +536,18 @@ describe('Dataupload endpoint', () => {
     expect(allUpdatedStations).toHaveLength(allStations.length + 6);
 
     await fs.unlink(`${dest}/stations.csv`);
+    await userLogout(token);
   });
 
   test('trips can be uploaded', async () => {
+    const token = await userLogin('arendel');
     await fs.copyFile(`${src}/trips_api.csv`, `${dest}/trips_api.csv`);
 
     const allTrips = await Trip.findAll();
 
     const response = await api
       .post('/api/dataupload/trips')
+      .set('Authorization', `Bearer ${token}`)
       .attach('file', `${dest}/trips_api.csv`)
       .expect(200)
       .expect('Content-Type', /application\/json/);
@@ -554,6 +559,7 @@ describe('Dataupload endpoint', () => {
     expect(allUpdatedTrips).toHaveLength(allTrips.length + 2);
 
     await fs.unlink(`${dest}/trips_api.csv`);
+    await userLogout(token);
   });
 });
 
