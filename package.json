@@ -15,7 +15,8 @@
     "deploy:full": "npm run build:ui && npm run deploy",
     "migration:down": "node server/scripts/rollback.js",
     "lint": "eslint .",
-    "test": "cross-env NODE_ENV=test jest --verbose"
+    "test": "cross-env NODE_ENV=test jest --verbose",
+    "cypress:run": "cd ./client && cypress run"
   },
   "author": "Aleksi Rendel",
   "license": "ISC",
