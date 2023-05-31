@@ -42,16 +42,22 @@ To run locally:
 - add and configure both .env files locally (root and /client)
 
 Scripts in root folder:
-npm start - Production mode, runs with static build
-npm run dev - Development mode with nodemon reloading, starts only backend server, database is production database
-npm run build:ui - creats React production build to client/build
-npm run deploy - deploys app to fly.io
-npm run deploy:full - crates production build and deploys to fly.io
-npm run migration:down - last database migration rollback
-npm run lint - runs eslint on all included files
-npm run test - runs all jest tests (unit and integration), database ist test database -> add suffixes to run specific tests!
+
+- npm start - Production mode, runs with static build
+- npm run dev - Development mode with nodemon reloading, starts only backend server, database is production database
+- npm run start:test - Test mode, starts only backend server, database is test database with seed data
+- npm run build:ui - creats React production build to client/build
+- npm run deploy - deploys app to fly.io
+- npm run deploy:full - crates production build and deploys to fly.io
+- npm run migration:down - last database migration rollback
+- npm run lint - runs eslint on all included files
+- npm run test - runs all jest tests (unit and integration), database ist test database -> add suffixes to run specific tests!
+
 Script in /client folder:
-npm start - needed if backend is running in development mode, proxy to backend
+
+- npm start - needed if backend is running in development or test mode, proxy to backend
+- npm run cypress:open - runs cypress in browser
+- npm run cypress:run - runs cypress in terminal
 
 ## Tests:
 
@@ -106,3 +112,8 @@ IMPORTANT: Running Linux on Windows Subsystem (WSL2) might need some further set
 - Integration tests in frontend could be added
 - context or redux could be used for state management in frontend
 - frontend styling and UI could be enhanced
+
+## Additional info
+
+Link to previous version of application done with GraphQL and MongoDB:
+https://github.com/galeksi/bikeapp

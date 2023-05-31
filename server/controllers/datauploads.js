@@ -26,7 +26,6 @@ router.post(
       });
     }
 
-    // Data is uploaded to tmp/csv and validated rows with new headers returned as objects
     const data = await readCsv({
       path: req.file.path,
       options: {
@@ -37,11 +36,11 @@ router.post(
     });
 
     const validatedData = partition(data);
-    // Validated data is saved to the DB
+
     const savedStations = await Station.bulkCreate(validatedData.valid, {
       ignoreDuplicates: true,
     });
-    // DB returns dublicates with ID null
+
     const duplicates = savedStations.filter(
       (s) => s.toJSON().id === null
     ).length;
@@ -68,11 +67,9 @@ router.post(
       });
     }
 
-    // Stations queried to be refrenced in trips departure and return
     const stations = await Station.findAll();
     const stationsJson = stations.map((s) => s.toJSON());
 
-    // Data is uploaded to tmp/csv and validated rows with new headers returned as objects
     const data = await readCsv({
       path: req.file.path,
       options: {
