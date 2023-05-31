@@ -1,4 +1,7 @@
 {
+  "engines": {
+    "node": "18.10.0"
+  },
   "name": "bikeapp_postgres",
   "version": "1.0.0",
   "description": "",

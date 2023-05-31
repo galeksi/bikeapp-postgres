@@ -38,3 +38,13 @@ processes = []
     interval = "15s"
     restart_limit = 0
     timeout = "2s"
+
+[deploy]
+  release_command = "npm run build:ui"
+
+[processes]
+  app = "node app.js"
+
+[build]
+  [build.args]
+    NODE_VERSION = "18.10.0"

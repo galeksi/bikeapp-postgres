@@ -11,11 +11,13 @@ describe('Bikeapp', () => {
   describe('main pages can be visited', () => {
     it('trips can be opened', () => {
       cy.contains('TRIPS').click();
+      cy.wait(5000);
       cy.contains('Trips');
     });
 
     it('stations can be opened', () => {
       cy.contains('TRIPS').click();
+      cy.wait(5000);
       cy.contains('Trips');
       cy.contains('STATIONS').click();
       cy.contains('Stations');
@@ -25,16 +27,19 @@ describe('Bikeapp', () => {
   describe('trips page', () => {
     it('trips are shown and paginated', () => {
       cy.visit('http://localhost:3000/trips');
+      cy.wait(5000);
       cy.contains('Pasilan asema');
       cy.contains('forward').click();
       cy.contains('Vilhonvuorenkatu');
     });
     it('trips can be filtered', () => {
       cy.visit('http://localhost:3000/trips');
+      cy.wait(5000);
       cy.get('#departurestation').click().type('Keilalahti{enter}');
       cy.get('#returnstation').click().type('Tapionaukio{enter}');
       cy.get('#datepicker').click().type('07/27/2021{enter}');
       cy.get('#tripfilterbutton').click();
+      cy.wait(5000);
       cy.contains('10:45');
     });
   });
