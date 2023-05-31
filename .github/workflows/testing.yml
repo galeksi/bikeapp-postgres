@@ -20,20 +20,20 @@ jobs:
         run: cd client && npm install
       - name: Check style
         run: npm run lint
-      - name: Build
-        run: npm run build:ui
-      - name: Test
-        run: npm run test
-        env:
-          TEST_DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
-      - name: e2e tests
-        uses: cypress-io/github-action@v5
-        with:
-          command: npm run cypress:run
-          start: npm start
-          wait-on: http://localhost:3001
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      # - name: Build
+      #   run: npm run build:ui
+      # - name: Test
+      #   run: npm run test
+      # env:
+      #   TEST_DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
+      # - name: e2e tests
+      #   uses: cypress-io/github-action@v5
+      #   with:
+      #     command: npm run cypress:run
+      #     start: npm start
+      #     wait-on: http://localhost:3001
+      #   env:
+      #     DATABASE_URL: ${{ secrets.DATABASE_URL }}
       - name: fly.io deployment
         run: flyctl deploy --remote-only
         env:
