@@ -31,11 +31,10 @@ jobs:
         with:
           command: cd client && npm run cypress:run
           start: npm start
-          wait-on: http://localhost:3000
+          wait-on: http://localhost:3001
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
       - name: fly.io deployment
-        if: ${{ github.event_name == 'push' && !contains( join(toJson(github.event.commits.*.message)), '#skip' ) }}
         run: flyctl deploy --remote-only
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
