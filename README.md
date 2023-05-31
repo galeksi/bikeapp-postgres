@@ -22,6 +22,7 @@ The application icludes:
 
 Application is written with Node version v18.10.0. Same or later version recommended.
 Application is a monorepo sepperated in folders /server and /client.
+Database is hosted on ElephantSQL and should be accessable with the .env variables.
 
 Variables in root/.env file:
 
