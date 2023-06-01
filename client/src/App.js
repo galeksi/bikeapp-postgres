@@ -15,6 +15,8 @@ import loginService from './services/login';
 import logoutService from './services/logout';
 import Signup from './components/Signup';
 
+import './styles/App.css';
+
 const App = () => {
   const [stations, setStations] = useState([]);
   const [username, setUsername] = useState('');
@@ -138,7 +140,7 @@ const App = () => {
       <div>
         <div>
           {userAuth}
-          <h1>BIKEAPP 2023</h1>
+          <h1 id="logo">CITYBIKE</h1>
           <div>
             <Link to="/">STATIONS </Link>
             <Link to="/trips">TRIPS </Link>
