@@ -71,6 +71,7 @@ Backend unittests and integration tests:
 
 There are test csv files in the /csv folder.
 For integration tests the test database droppes all tables, runs migrations and seeds data from seeds.js before all tests are run.
+There is a github workflow that runs the unit and integrations tests on every push to the master branch.
 
 E2E tests:
 

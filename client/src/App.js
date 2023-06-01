@@ -134,7 +134,7 @@ const App = () => {
   }
 
   return (
-    <div>
+    <div className="container">
       <div>
         <div>
           {userAuth}
