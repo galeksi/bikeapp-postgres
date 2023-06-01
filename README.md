@@ -32,6 +32,8 @@ Variables in root/.env file:
   Variable in root/client/.env file:
 - REACT_APP_MAPS_API_KEY
 
+To login as an admin user to the application and see the admin panel one can use -> username and password: solita
+
 ## Configurations:
 
 Public production version: https://bikeapp-postgres.fly.dev/
