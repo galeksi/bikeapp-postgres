@@ -12,6 +12,7 @@ import { paginationLoader } from '../utils/helpers';
 
 import '../styles/map.css';
 import '../styles/pagination.css';
+import customMarkerIcon from '../assets/Map_marker_blue.png';
 
 const StationList = ({ stations }) => {
   const [currentPage, setCurrentPage] = useState(0);
@@ -89,6 +90,7 @@ const StationList = ({ stations }) => {
         <Marker
           key={ind}
           position={{ lat, lng }}
+          icon={customMarkerIcon}
           onClick={() => {
             handleMarkerClick(ind, lat, lng, name, number, address, capacity);
           }}
@@ -119,7 +121,7 @@ const StationList = ({ stations }) => {
       ))}
     </GoogleMap>
   ) : (
-    <h1>Loading...</h1>
+    <div className="loader"></div>
   );
 
   return (
@@ -162,8 +164,8 @@ const StationList = ({ stations }) => {
         <thead>
           <tr>
             <th>Number</th>
-            <th>Name</th>
-            <th>Address</th>
+            <th className="align-left">Name</th>
+            <th className="align-left">Address</th>
             <th>City</th>
             <th>Capacity</th>
             <th>Details</th>
@@ -173,8 +175,8 @@ const StationList = ({ stations }) => {
           {stationsToView.items.map((s) => (
             <tr key={s.id}>
               <td>{s.number}</td>
-              <td>{s.nimi}</td>
-              <td>{s.osoite}</td>
+              <td className="align-left">{s.nimi}</td>
+              <td className="align-left">{s.osoite}</td>
               <td>{s.kaupunki}</td>
               <td>{s.capacity}</td>
               <td>

@@ -1,0 +1,55 @@
+#logo {
+  color: var(--primary-color);
+  font-family: 'Permanent Marker', cursive;
+  margin: 0px;
+  margin-right: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.container {
+  width: 900px;
+  margin: auto;
+}
+
+.header-bar {
+  width: 100%;
+  border-bottom: 1px solid var(--medium-color);
+  padding-bottom: 10px;
+}
+
+.header {
+  width: 1000px;
+  margin: auto;
+  display: flex;
+  align-items: center;
+}
+
+.navigation {
+  flex-grow: 4;
+
+  & a {
+    color: var(--primary-color);
+    font-size: 1.1em;
+    text-decoration: none;
+    text-transform: uppercase;
+    margin-right: 0.5rem;
+  }
+
+  & a:hover {
+    color: var(--primary-light);
+  }
+}
+
+.user-nav {
+  display: flex;
+  align-items: center;
+}
+
+.footer-bar {
+  padding: 1rem;
+  margin-top: 2rem;
+  border-top: 1px solid var(--medium-color);
+  text-align: center;
+  text-transform: uppercase;
+  color: var(--text-light);
+}

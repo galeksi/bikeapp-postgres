@@ -15,6 +15,8 @@ import loginService from './services/login';
 import logoutService from './services/logout';
 import Signup from './components/Signup';
 
+import './styles/App.css';
+
 const App = () => {
   const [stations, setStations] = useState([]);
   const [username, setUsername] = useState('');
@@ -90,7 +92,7 @@ const App = () => {
 
   const userAuth =
     user === null ? (
-      <div>
+      <div className="user-nav">
         <Togglable buttonLabel={'Login'} buttonLabelBack={'cancel'}>
           <form onSubmit={handleLogin}>
             <div>
@@ -113,40 +115,39 @@ const App = () => {
                 onChange={({ target }) => setPassword(target.value)}
               />
             </div>
-            <button id="login-button" type="submit">
+            <button className="btn-primary-lg" id="login-button" type="submit">
               login
             </button>
           </form>
         </Togglable>
-        <Link to={'/signup'}>Register</Link>
+        <Link className="btn-secondary-lg" to={'/signup'}>
+          Register
+        </Link>
       </div>
     ) : (
-      <div>
-        <p>
-          <Link to={`/user/${user.username}`}>PROFILE</Link>
-          <button onClick={handleLogout}>Logout</button>
-        </p>
+      <div className="user-nav">
+        <Link to={`/user/${user.username}`}>PROFILE</Link>
+        <button onClick={handleLogout}>Logout</button>
       </div>
     );
 
   if (stations.length === 0) {
-    return <h1>Loading...</h1>;
+    return <div className="loader"></div>;
   }
 
   return (
-    <div className="container">
-      <div>
-        <div>
-          {userAuth}
-          <h1>BIKEAPP 2023</h1>
-          <div>
-            <Link to="/">STATIONS </Link>
-            <Link to="/trips">TRIPS </Link>
+    <>
+      <div className="header-bar">
+        <div className="header">
+          <h1 id="logo">citybike</h1>
+          <div className="navigation">
+            <Link to="/">stations</Link>
+            <Link to="/trips">trips</Link>
           </div>
+          {userAuth}
         </div>
-        <Notification message={notification} />
-        <Error message={errorMessage} />
-
+      </div>
+      <div className="container">
         <Routes>
           <Route path="/" element={<StationList stations={stations} />} />
           <Route
@@ -178,10 +179,12 @@ const App = () => {
           />
         </Routes>
       </div>
-      <div>
-        <p>Bikeapp 2023 - Aleksi Rendel</p>
+      <Notification message={notification} />
+      <Error message={errorMessage} />
+      <div className="footer-bar">
+        <div className="footer">Bikeapp 2023 - Aleksi Rendel</div>
       </div>
-    </div>
+    </>
   );
 };
 
