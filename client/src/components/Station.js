@@ -5,6 +5,7 @@ import { GoogleMap, Marker, useLoadScript } from '@react-google-maps/api';
 import stationService from '../services/stations';
 
 import '../styles/map.css';
+import customMarkerIcon from '../assets/Map_marker_blue.png';
 
 const Station = ({ stations }) => {
   const [station, setStation] = useState();
@@ -36,7 +37,11 @@ const Station = ({ stations }) => {
   });
 
   if (!station) {
-    return <h1>Loading...</h1>;
+    return (
+      <div className="loader-container">
+        <div className="loader"></div>
+      </div>
+    );
   }
 
   const googleMap = isLoaded ? (
@@ -45,7 +50,7 @@ const Station = ({ stations }) => {
       center={station.center}
       zoom={15}
     >
-      <Marker position={station.center} />
+      <Marker position={station.center} icon={customMarkerIcon} />
     </GoogleMap>
   ) : (
     <h1>Loading...</h1>
@@ -53,9 +58,9 @@ const Station = ({ stations }) => {
 
   return (
     <div>
-      <h1>
+      <h2>
         Station Nr {station.number}: {station.nimi}
-      </h1>
+      </h2>
       {googleMap}
       <div>
         <div>

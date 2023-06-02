@@ -32,9 +32,10 @@ const Trips = ({ stations }) => {
     fetchTrips();
   }, []);
 
-  if (allTrips.length === 0) {
-    return <h1>Loading...</h1>;
-  }
+  // if (allTrips.length === 0) {
+  //   // return <h1>Loading...</h1>;
+  //   return <div className="loader"></div>;
+  // }
 
   // Decides if all trips or filter result is added for pagination and initial view
   const trips = filteredTrips.length === 0 ? allTrips : filteredTrips;
@@ -69,102 +70,112 @@ const Trips = ({ stations }) => {
   return (
     <div>
       <h2>Trips</h2>
-      <div>
-        <div>
-          <Select
-            id="departurestation"
-            classNamePrefix="Departure..."
-            value={departureFilter}
-            isClearable={true}
-            isSearchable={true}
-            placeholder="Departure station"
-            options={stationOptions}
-            onChange={setDepartureFilter}
-          />
-          <Select
-            id="returnstation"
-            classNamePrefix="Return..."
-            value={returnFilter}
-            isClearable={true}
-            isSearchable={true}
-            placeholder="Return station"
-            options={stationOptions}
-            onChange={setReturnFilter}
-          />
-          <DatePicker
-            id="datepicker"
-            placeholderText="Date"
-            selected={startDate}
-            onChange={(date) => setStartDate(date)}
-          />
+      {allTrips.length === 0 ? (
+        <div className="loader-container">
+          <div className="loader"></div>
         </div>
-        <div>
+      ) : (
+        <>
           <div>
-            <button id="tripfilterbutton" onClick={filterTrips}>
-              Filter
-            </button>
-            <button onClick={clearFilter}>Clear filter</button>
+            <div>
+              <Select
+                id="departurestation"
+                classNamePrefix="Departure..."
+                value={departureFilter}
+                isClearable={true}
+                isSearchable={true}
+                placeholder="Departure station"
+                options={stationOptions}
+                onChange={setDepartureFilter}
+              />
+              <Select
+                id="returnstation"
+                classNamePrefix="Return..."
+                value={returnFilter}
+                isClearable={true}
+                isSearchable={true}
+                placeholder="Return station"
+                options={stationOptions}
+                onChange={setReturnFilter}
+              />
+              <DatePicker
+                id="datepicker"
+                placeholderText="Date"
+                selected={startDate}
+                onChange={(date) => setStartDate(date)}
+              />
+            </div>
+            <div>
+              <div>
+                <button id="tripfilterbutton" onClick={filterTrips}>
+                  Filter
+                </button>
+                <button onClick={clearFilter}>Clear filter</button>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-      <ReactPaginate
-        activeClassName={'item active '}
-        breakClassName={'item break-me '}
-        breakLabel={'...'}
-        containerClassName={'pagination'}
-        disabledClassName={'disabled-page'}
-        marginPagesDisplayed={2}
-        nextClassName={'item next '}
-        nextLabel={'forward >'}
-        onPageChange={handlePageClick}
-        pageCount={tripsToView.pageCount}
-        pageClassName={'item pagination-page '}
-        pageRangeDisplayed={2}
-        previousClassName={'item previous'}
-        previousLabel={'< back'}
-      />
-      <table>
-        <thead>
-          <tr>
-            <th>Departure station</th>
-            <th>Station Nr</th>
-            <th>Date</th>
-            <th>Time</th>
-            <th>Return Station</th>
-            <th>Station Nr</th>
-            <th>Duration</th>
-            <th>Distance</th>
-          </tr>
-        </thead>
-        <tbody>
-          {tripsToView.items &&
-            tripsToView.items.map((t) => (
-              <tr key={t.id}>
-                <td>{t.forDeparture.nimi}</td>
-                <td>
-                  <Link to={`/station/${t.forDeparture.id}`}>
-                    {t.forDeparture.number}
-                  </Link>
-                </td>
-                <td>{new Date(t.departure).toLocaleDateString('fi-FI')}</td>
-                <td>
-                  {new Date(t.departure).toLocaleTimeString([], {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  })}
-                </td>
-                <td>{t.forReturn.nimi}</td>
-                <td>
-                  <Link to={`/station/${t.forReturn.id}`}>
-                    {t.forReturn.number}
-                  </Link>
-                </td>
-                <td>{(t.duration / 60).toFixed(0)}&nbsp;min</td>
-                <td>{(t.distance / 1000).toFixed(1)}&nbsp;km</td>
+          <ReactPaginate
+            activeClassName={'item active '}
+            breakClassName={'item break-me '}
+            breakLabel={'...'}
+            containerClassName={'pagination'}
+            disabledClassName={'disabled-page'}
+            marginPagesDisplayed={2}
+            nextClassName={'item next '}
+            nextLabel={'forward >'}
+            onPageChange={handlePageClick}
+            pageCount={tripsToView.pageCount}
+            pageClassName={'item pagination-page '}
+            pageRangeDisplayed={2}
+            previousClassName={'item previous'}
+            previousLabel={'< back'}
+          />
+          <table>
+            <thead>
+              <tr>
+                <th className="align-left">Date</th>
+                <th className="align-left">Time</th>
+                <th className="align-left">Departure station</th>
+                <th>Station Nr</th>
+                <th className="align-left">Return Station</th>
+                <th>Station Nr</th>
+                <th>Duration</th>
+                <th>Distance</th>
               </tr>
-            ))}
-        </tbody>
-      </table>
+            </thead>
+            <tbody>
+              {tripsToView.items &&
+                tripsToView.items.map((t) => (
+                  <tr key={t.id}>
+                    <td className="align-left">
+                      {new Date(t.departure).toLocaleDateString('fi-FI')}
+                    </td>
+                    <td className="align-left">
+                      {new Date(t.departure).toLocaleTimeString([], {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })}
+                    </td>
+                    <td className="align-left">{t.forDeparture.nimi}</td>
+                    <td>
+                      <Link to={`/station/${t.forDeparture.id}`}>
+                        {t.forDeparture.number}
+                      </Link>
+                    </td>
+                    <td className="align-left">{t.forReturn.nimi}</td>
+                    <td>
+                      <Link to={`/station/${t.forReturn.id}`}>
+                        {t.forReturn.number}
+                      </Link>
+                    </td>
+                    <td>{(t.duration / 60).toFixed(0)}&nbsp;min</td>
+                    <td>{(t.distance / 1000).toFixed(1)}&nbsp;km</td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
+        </>
+      )}
     </div>
   );
 };

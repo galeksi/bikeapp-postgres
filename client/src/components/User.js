@@ -252,7 +252,7 @@ const User = ({
   return (
     <div>
       <div>
-        <h1>Hello, {profile.name}</h1>
+        <h2>Hello, {profile.name}</h2>
         <h3>
           Username: {profile.username}
           <Togglable buttonLabel={'Update password'} buttonLabelBack={'close'}>

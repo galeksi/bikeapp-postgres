@@ -1,17 +1,125 @@
 :root {
   --primary-color: #276fbf;
-  --text-color: #1e1e24;
-  --error-color: #ff6666;
+  --primary-light: #347fd5;
+  --text-dark: #1c1c22;
+  --text-light: #40404f;
+  --medium-color: #e5dfdc;
   --light-color: #f6f4f3;
-}
-
-.container {
-  width: 800px;
-  margin: auto;
+  --error-color: #ff6666;
+  --success-color: #57a773;
 }
 
 body {
   font-family: 'Poppins', sans-serif;
   background-color: var(--light-color);
-  color: var(--text-color);
+  color: var(--text-dark);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+h2 {
+  color: var(--text-light);
+  text-align: center;
+  font-style: italic;
+}
+
+table {
+  width: 100%;
+}
+
+td {
+  text-align: center;
+
+  &.align-left {
+    text-align: left;
+  }
+}
+
+th {
+  color: var(--text-light);
+  &.align-left {
+    text-align: left;
+  }
+}
+
+a {
+  text-decoration: none;
+  text-transform: uppercase;
+  &:hover {
+    color: var(--primary-light);
+  }
+}
+
+.btn-primary-lg {
+  font-family: 'Poppins', sans-serif;
+  text-transform: uppercase;
+  font-size: 1rem;
+  background-color: var(--primary-color);
+  border-radius: 0px;
+  border-width: 0px;
+  padding: 0.5rem 1.5rem 0.55rem 1.5rem;
+  color: var(--light-color);
+  text-decoration: none;
+
+  &:hover {
+    background-color: var(--primary-light);
+  }
+}
+
+.btn-secondary-lg {
+  text-transform: uppercase;
+  font-size: 1rem;
+  background-color: var(--light-color);
+  border-radius: 0px;
+  /* border: 1px solid var(--primary-color); */
+  padding: 0.5rem 1.5rem 0.5rem 1.5rem;
+  color: var(--primary-color);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--primary-light);
+  }
+}
+
+.loader-container {
+  margin-top: 40vh;
+  margin-bottom: 50vh;
+}
+
+.loader {
+  width: 50px; /* control the size */
+  aspect-ratio: 8/5;
+  --_g: no-repeat radial-gradient(#000 68%, #0000 71%);
+  -webkit-mask: var(--_g), var(--_g), var(--_g);
+  mask: var(--_g), var(--_g), var(--_g);
+  -webkit-mask-size: 25% 40%;
+  mask-size: 25% 40%;
+  background: var(--primary-color);
+  animation: load 2s infinite;
+  margin: auto;
+}
+
+@keyframes load {
+  0% {
+    -webkit-mask-position: 0% 0%, 50% 0%, 100% 0%;
+  }
+  16.67% {
+    -webkit-mask-position: 0% 100%, 50% 0%, 100% 0%;
+  }
+  33.33% {
+    -webkit-mask-position: 0% 100%, 50% 100%, 100% 0%;
+  }
+  50% {
+    -webkit-mask-position: 0% 100%, 50% 100%, 100% 100%;
+  }
+  66.67% {
+    -webkit-mask-position: 0% 0%, 50% 100%, 100% 100%;
+  }
+  83.33% {
+    -webkit-mask-position: 0% 0%, 50% 0%, 100% 100%;
+  }
+  100% {
+    -webkit-mask-position: 0% 0%, 50% 0%, 100% 0%;
+  }
 }
