@@ -1,0 +1,8 @@
+.station-search-bar {
+  display: flex;
+  margin-top: 1rem;
+}
+
+#stationsearch {
+  flex-grow: 1;
+}

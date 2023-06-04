@@ -37,11 +37,7 @@ const Station = ({ stations }) => {
   });
 
   if (!station) {
-    return (
-      <div className="loader-container">
-        <div className="loader"></div>
-      </div>
-    );
+    return <div className="loader"></div>;
   }
 
   const googleMap = isLoaded ? (

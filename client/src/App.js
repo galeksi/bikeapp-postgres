@@ -136,18 +136,18 @@ const App = () => {
   }
 
   return (
-    <>
+    <div className="container">
       <div className="header-bar">
         <div className="header">
-          <h1 id="logo">citybike</h1>
           <div className="navigation">
+            <h1 id="logo">citybike</h1>
             <Link to="/">stations</Link>
             <Link to="/trips">trips</Link>
           </div>
           {userAuth}
         </div>
       </div>
-      <div className="container">
+      <div className="content">
         <Routes>
           <Route path="/" element={<StationList stations={stations} />} />
           <Route
@@ -184,7 +184,7 @@ const App = () => {
       <div className="footer-bar">
         <div className="footer">Bikeapp 2023 - Aleksi Rendel</div>
       </div>
-    </>
+    </div>
   );
 };
 
