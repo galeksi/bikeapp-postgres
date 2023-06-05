@@ -1,6 +1,7 @@
 #logo {
   color: var(--primary-color);
   font-family: 'Permanent Marker', cursive;
+  font-size: 2rem;
   margin: 0px;
   margin-right: 1rem;
   margin-bottom: 0.5rem;
@@ -22,7 +23,6 @@
 .header-bar {
   width: 100%;
   border-bottom: 1px solid var(--medium-color);
-  padding-bottom: 10px;
 }
 
 .header {
@@ -53,6 +53,11 @@
 .user-nav {
   display: flex;
   align-items: center;
+}
+
+.profile-icon {
+  height: 2rem;
+  margin-top: 0.5rem;
 }
 
 .footer-bar {

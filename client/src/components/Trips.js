@@ -63,7 +63,7 @@ const Trips = ({ stations }) => {
 
   return (
     <div>
-      <h2>Trips</h2>
+      <h1>Trips</h1>
       {allTrips.length === 0 ? (
         <div className="loader"></div>
       ) : (

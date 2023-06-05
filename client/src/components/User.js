@@ -7,6 +7,8 @@ import userService from '../services/users';
 import tripService from '../services/trips';
 import Select from 'react-select';
 
+import '../styles/User.css';
+
 const User = ({
   user,
   stations,
@@ -145,60 +147,70 @@ const User = ({
         onChange={({ target }) => setConfirmNewPassword(target.value)}
       ></input>
 
-      <button type={'submit'}>Update</button>
+      <button className="btn-primary-lg" type={'submit'}>
+        Update
+      </button>
     </form>
   );
 
   const newTripForm = (
     <form onSubmit={addTrip}>
       <p>Departure:</p>
-      <Select
-        id="departurestation"
-        classNamePrefix="Departure..."
-        value={departureStation}
-        isClearable={true}
-        isSearchable={true}
-        placeholder="Departure station"
-        options={stationOptions}
-        onChange={setDepartureStation}
-      />
-      <input
-        type="datetime-local"
-        id="time-departure"
-        name="time-departure"
-        value={departureTime}
-        onChange={({ target }) => setDepartureTime(target.value)}
-      ></input>
+      <div className="user-trip">
+        <input
+          type="datetime-local"
+          id="time-departure"
+          name="time-departure"
+          value={departureTime}
+          onChange={({ target }) => setDepartureTime(target.value)}
+        ></input>
+        <Select
+          id="departurestation"
+          classNamePrefix="Departure..."
+          value={departureStation}
+          isClearable={true}
+          isSearchable={true}
+          placeholder="Departure station"
+          options={stationOptions}
+          onChange={setDepartureStation}
+        />
+      </div>
       <p>Return:</p>
-      <Select
-        id="returnstation"
-        classNamePrefix="Return..."
-        value={returnStation}
-        isClearable={true}
-        isSearchable={true}
-        placeholder="Return station"
-        options={stationOptions}
-        onChange={setReturnStation}
-      />
-      <input
-        type="datetime-local"
-        id="time-return"
-        name="time-return"
-        value={returnTime}
-        onChange={({ target }) => setReturnTime(target.value)}
-      ></input>
-      <p>Distance:</p>
-      <input
-        type="number"
-        name="distance"
-        placeholder="Distance"
-        min="1"
-        max="100"
-        step=".1"
-        value={distance}
-        onChange={({ target }) => setDistance(target.value)}
-      ></input>
-      <button type={'submit'}>Add trip</button>
+      <div className="user-trip">
+        <input
+          type="datetime-local"
+          id="time-return"
+          name="time-return"
+          value={returnTime}
+          onChange={({ target }) => setReturnTime(target.value)}
+        ></input>
+        <Select
+          id="returnstation"
+          classNamePrefix="Return..."
+          value={returnStation}
+          isClearable={true}
+          isSearchable={true}
+          placeholder="Return station"
+          options={stationOptions}
+          onChange={setReturnStation}
+        />
+      </div>
+      <div className="user-trip-distance">
+        <p>Distance:</p>
+        <input
+          type="number"
+          name="distance"
+          placeholder="Distance"
+          min="1"
+          max="100"
+          step=".1"
+          value={distance}
+          onChange={({ target }) => setDistance(target.value)}
+        ></input>
+        <button className="btn-primary-lg" type={'submit'}>
+          Add trip
+        </button>
+      </div>
     </form>
   );
 
@@ -206,10 +218,10 @@ const User = ({
     <table>
       <thead>
         <tr>
-          <th>Departure station</th>
+          <th className="align-left">Departure station</th>
+          <th className="align-left">Return Station</th>
           <th>Date</th>
           <th>Time</th>
-          <th>Return Station</th>
           <th>Duration</th>
           <th>Distance</th>
         </tr>
@@ -218,10 +230,18 @@ const User = ({
         {profile.trips &&
           profile.trips.map((t) => (
             <tr key={t.id}>
-              <td>
+              <td className="align-left">
                 <Link to={`/station/${t.departureStation}`}>
                   {
                     stationOptions.find((s) => s.value === t.departureStation)
+                      .label
+                  }
+                </Link>
+              </td>
+              <td className="align-left">
+                <Link to={`/station/${t.returnStation}`}>
+                  {
+                    stationOptions.find((s) => s.value === t.returnStation)
                       .label
                   }
                 </Link>
@@ -233,14 +253,6 @@ const User = ({
                   minute: '2-digit',
                 })}
               </td>
-              <td>
-                <Link to={`/station/${t.returnStation}`}>
-                  {
-                    stationOptions.find((s) => s.value === t.returnStation)
-                      .label
-                  }
-                </Link>
-              </td>
               <td>{(t.duration / 60).toFixed(0)}&nbsp;min</td>
               <td>{(t.distance / 1000).toFixed(1)}&nbsp;km</td>
             </tr>
@@ -249,19 +261,28 @@ const User = ({
     </table>
   );
 
+  if (profile.length === 0) {
+    return (
+      <>
+        <h1>Profile</h1>
+        <div className="loader"></div>;
+      </>
+    );
+  }
+
   return (
     <div>
-      <div>
-        <h2>Hello, {profile.name}</h2>
-        <h3>
-          Username: {profile.username}
+      <div className="user-container">
+        <h1>Hello, {profile.name}</h1>
+        <div className="profile-username">
+          <h3>Username: {profile.username}</h3>
           <Togglable buttonLabel={'Update password'} buttonLabelBack={'close'}>
             {passwordForm}
           </Togglable>
-        </h3>
-        <h3>Add trip</h3>
+        </div>
+        <h2>Add trip:</h2>
         {newTripForm}
-        <h3>Your trips</h3>
+        <h2>Your trips:</h2>
         {tripsTable}
       </div>
       {adminPanel}

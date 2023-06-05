@@ -9,6 +9,7 @@ import User from './components/User';
 import Togglable from './components/Togglable';
 import Notification from './components/Notification';
 import Error from './components/Error';
+import profileIcon from './assets/profile-icon.png';
 
 import stationService from './services/stations';
 import loginService from './services/login';
@@ -126,8 +127,12 @@ const App = () => {
       </div>
     ) : (
       <div className="user-nav">
-        <Link to={`/user/${user.username}`}>PROFILE</Link>
-        <button onClick={handleLogout}>Logout</button>
+        <Link to={`/user/${user.username}`}>
+          <img className="profile-icon" src={profileIcon} />
+        </Link>
+        <button className="btn-secondary-lg" onClick={handleLogout}>
+          Logout
+        </button>
       </div>
     );
 
@@ -140,7 +145,7 @@ const App = () => {
       <div className="header-bar">
         <div className="header">
           <div className="navigation">
-            <h1 id="logo">citybike</h1>
+            <div id="logo">citybike</div>
             <Link to="/">stations</Link>
             <Link to="/trips">trips</Link>
           </div>

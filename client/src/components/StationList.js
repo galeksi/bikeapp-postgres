@@ -146,7 +146,7 @@ const StationList = ({ stations }) => {
 
   return (
     <div>
-      <h2>Stations</h2>
+      <h1>Stations</h1>
       {googleMap}
       <div>
         <form className="station-search-bar" onSubmit={searchStations}>

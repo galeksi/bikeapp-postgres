@@ -16,7 +16,7 @@
 }
 
 .active {
-  border: solid 1px #2563eb;
+  border: solid 1px var(--primary-color);
   border-radius: 40px;
   color: #2563eb;
 }

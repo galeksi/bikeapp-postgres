@@ -1,0 +1,42 @@
+.user-container {
+  margin-bottom: 5em;
+
+  & h2 {
+    margin-top: 3em;
+    border-bottom: 1px solid var(--medium-color);
+  }
+}
+
+.profile-username {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  & h3 {
+    margin-bottom: 0.5rem;
+    margin-top: 0;
+    font-weight: 300;
+  }
+}
+
+.user-trip {
+  display: flex;
+}
+
+.user-trip-distance {
+  display: flex;
+  margin: 2em 0;
+
+  & p {
+    margin: 0.5rem 0;
+  }
+
+  & button {
+    flex-grow: 1;
+  }
+
+  & input {
+    margin-left: 1em;
+  }
+}
