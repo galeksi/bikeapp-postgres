@@ -1,0 +1,92 @@
+.user-container {
+  margin-bottom: 5em;
+
+  & h2 {
+    margin-top: 3em;
+    border-bottom: 1px solid var(--medium-color);
+  }
+}
+
+.profile-username {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  & h3 {
+    margin-bottom: 0.5rem;
+    margin-top: 0;
+    font-weight: 300;
+  }
+}
+
+.user-trip {
+  display: flex;
+}
+
+#user-departure {
+  width: 100%;
+
+  & .departure__control {
+    border: 1px solid var(--medium-color);
+    height: 100%;
+    border-radius: 0;
+  }
+
+  & .departure__control--is-focused {
+    border: 1px solid var(--primary-color);
+    border-radius: 0;
+    height: 100%;
+    box-shadow: none;
+  }
+
+  & .departure__option--is-selected {
+    background-color: var(--primary-color);
+  }
+
+  & .departure__option--is-focused {
+    background-color: var(--medium-color);
+  }
+}
+
+#user-return {
+  width: 100%;
+
+  .return__control {
+    border: 1px solid var(--medium-color);
+    height: 100%;
+    border-radius: 0;
+  }
+
+  .return__control--is-focused {
+    border: 1px solid var(--primary-color);
+    border-radius: 0;
+    height: 100%;
+    box-shadow: none;
+  }
+
+  .return__option--is-selected {
+    background-color: var(--primary-color);
+  }
+
+  .return__option--is-focused {
+    background-color: var(--medium-color);
+  }
+}
+
+.user-trip-distance {
+  display: flex;
+  margin: 2em 0;
+
+  & p {
+    margin: 0.5rem 0;
+  }
+
+  & button {
+    flex-grow: 1;
+  }
+
+  & input {
+    margin-left: 1em;
+  }
+}

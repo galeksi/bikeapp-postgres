@@ -4,6 +4,8 @@ import PropTypes from 'prop-types';
 import userService from '../services/users';
 import loginService from '../services/login';
 
+import '../styles/Signup.css';
+
 const Signup = ({ setUser, setErrorMessage, setNotification }) => {
   const [username, setUsername] = useState('');
   const [name, setName] = useState('');
@@ -41,7 +43,7 @@ const Signup = ({ setUser, setErrorMessage, setNotification }) => {
 
   return (
     <div>
-      <form onSubmit={createUser}>
+      <form className="signup-form" onSubmit={createUser}>
         <input
           type="text"
           name="username"
@@ -74,7 +76,9 @@ const Signup = ({ setUser, setErrorMessage, setNotification }) => {
           onChange={({ target }) => setConfirmPassword(target.value)}
         ></input>
 
-        <button type={'submit'}>Register</button>
+        <button className="btn-primary-lg" type={'submit'}>
+          Register
+        </button>
       </form>
     </div>
   );

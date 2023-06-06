@@ -9,6 +9,7 @@ import User from './components/User';
 import Togglable from './components/Togglable';
 import Notification from './components/Notification';
 import Error from './components/Error';
+import profileIcon from './assets/profile-icon.png';
 
 import stationService from './services/stations';
 import loginService from './services/login';
@@ -94,31 +95,33 @@ const App = () => {
     user === null ? (
       <div className="user-nav">
         <Togglable buttonLabel={'Login'} buttonLabelBack={'cancel'}>
-          <form onSubmit={handleLogin}>
-            <div>
-              username
+          <div className="login-container">
+            <form className="login-form" onSubmit={handleLogin}>
               <input
                 id="username"
                 type="text"
+                placeholder="username"
                 value={username}
                 name="Username"
                 onChange={({ target }) => setUsername(target.value)}
               />
-            </div>
-            <div>
-              password
               <input
                 id="password"
                 type="password"
+                placeholder="password"
                 value={password}
                 name="Password"
                 onChange={({ target }) => setPassword(target.value)}
               />
-            </div>
-            <button className="btn-primary-lg" id="login-button" type="submit">
-              login
-            </button>
-          </form>
+              <button
+                className="btn-primary-lg"
+                id="login-button"
+                type="submit"
+              >
+                login
+              </button>
+            </form>
+          </div>
         </Togglable>
         <Link className="btn-secondary-lg" to={'/signup'}>
           Register
@@ -126,8 +129,12 @@ const App = () => {
       </div>
     ) : (
       <div className="user-nav">
-        <Link to={`/user/${user.username}`}>PROFILE</Link>
-        <button onClick={handleLogout}>Logout</button>
+        <Link to={`/user/${user.username}`}>
+          <img className="profile-icon" src={profileIcon} />
+        </Link>
+        <button className="btn-secondary-lg" onClick={handleLogout}>
+          Logout
+        </button>
       </div>
     );
 
@@ -136,18 +143,18 @@ const App = () => {
   }
 
   return (
-    <>
+    <div className="container">
       <div className="header-bar">
         <div className="header">
-          <h1 id="logo">citybike</h1>
           <div className="navigation">
+            <div id="logo">citybike</div>
             <Link to="/">stations</Link>
             <Link to="/trips">trips</Link>
           </div>
           {userAuth}
         </div>
       </div>
-      <div className="container">
+      <div className="content">
         <Routes>
           <Route path="/" element={<StationList stations={stations} />} />
           <Route
@@ -184,7 +191,7 @@ const App = () => {
       <div className="footer-bar">
         <div className="footer">Bikeapp 2023 - Aleksi Rendel</div>
       </div>
-    </>
+    </div>
   );
 };
 

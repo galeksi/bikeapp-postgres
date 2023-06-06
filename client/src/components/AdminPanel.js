@@ -2,10 +2,11 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import Papa from 'papaparse';
-// import Select from 'react-select';
 import userService from '../services/users';
 import stationService from '../services/stations';
 import uploadService from '../services/datauploads';
+
+import '../styles/AdminPanel.css';
 
 const AdminPanel = ({
   admin,
@@ -165,9 +166,9 @@ const AdminPanel = ({
     <table>
       <thead>
         <tr>
+          <th className="align-left">Name</th>
+          <th className="align-left">username</th>
           <th>id</th>
-          <th>Name</th>
-          <th>username</th>
           <th>created</th>
           <th>time</th>
           <th>updated</th>
@@ -182,9 +183,9 @@ const AdminPanel = ({
       <tbody>
         {users.map((u) => (
           <tr key={u.id}>
+            <td className="align-left">{u.name}</td>
+            <td className="align-left">{u.username}</td>
             <td>{u.id}</td>
-            <td>{u.name}</td>
-            <td>{u.username}</td>
             <td>{new Date(u.createdAt).toLocaleDateString('fi-FI')}</td>
             <td>
               {new Date(u.createdAt).toLocaleTimeString([], {
@@ -202,17 +203,28 @@ const AdminPanel = ({
             <td>{u.admin ? 'yes' : 'no'}</td>
             <td>{u.disabled ? 'yes' : 'no'}</td>
             <td>
-              <button onClick={() => changeAccess(u.id, u.disabled)}>
+              <button
+                className="btn-secondary-lg"
+                onClick={() => changeAccess(u.id, u.disabled)}
+              >
                 {u.disabled ? 'enable' : 'disable'}
               </button>
             </td>
             <td>
-              <button onClick={() => changeAdmin(u.id, u.admin)}>
+              <button
+                className="btn-secondary-lg"
+                onClick={() => changeAdmin(u.id, u.admin)}
+              >
                 {u.admin ? 'remove' : 'add'}
               </button>
             </td>
             <td>
-              <button onClick={() => deleteUser(u.id, u.name)}>Delete</button>
+              <button
+                className="btn-secondary-lg"
+                onClick={() => deleteUser(u.id, u.name)}
+              >
+                Delete
+              </button>
             </td>
           </tr>
         ))}
@@ -227,9 +239,9 @@ const AdminPanel = ({
       <table>
         <thead>
           <tr>
+            <th className="align-left">Name</th>
+            <th className="align-left">Address</th>
             <th>Number</th>
-            <th>Name</th>
-            <th>Address</th>
             <th>City</th>
             <th>Capacity</th>
             <th>Details</th>
@@ -239,9 +251,9 @@ const AdminPanel = ({
         <tbody>
           {searchedStations.map((s) => (
             <tr key={s.id}>
+              <td className="align-left">{s.nimi}</td>
+              <td className="align-left">{s.osoite}</td>
               <td>{s.number}</td>
-              <td>{s.nimi}</td>
-              <td>{s.osoite}</td>
               <td>{s.kaupunki}</td>
               <td>{s.capacity}</td>
               <td>
@@ -256,7 +268,9 @@ const AdminPanel = ({
                     min="1"
                     max="100"
                   ></input>
-                  <button type={'submit'}>Update</button>
+                  <button className="btn-secondary-lg" type={'submit'}>
+                    Update
+                  </button>
                 </form>
               </td>
             </tr>
@@ -266,7 +280,7 @@ const AdminPanel = ({
     );
 
   return (
-    <div>
+    <div className="admin-container">
       <h1>Admin panel:</h1>
       <h2>Users</h2>
       {userTable}
@@ -278,15 +292,20 @@ const AdminPanel = ({
             value={search}
             onChange={(event) => setSearch(event.target.value)}
           />
-          <button id="stationsearchbutton" type="submit">
+          <button
+            className="btn-primary-lg"
+            id="stationsearchbutton"
+            type="submit"
+          >
             Search
           </button>
         </form>
-        <button onClick={() => clearSearch()}>Clear search</button>
+        <button className="btn-secondary-lg" onClick={() => clearSearch()}>
+          Clear search
+        </button>
       </div>
       {stationsList}
       <h2>Datauploads</h2>
-      <h3>Stations</h3>
       <div>
         <form onSubmit={handleCsvUpload}>
           <input type="file" accept=".csv" name="fileInput" />
@@ -294,10 +313,11 @@ const AdminPanel = ({
             <option value="trips">Trips</option>
             <option value="stations">Stations</option>
           </select>
-          <button type="submit">Upload</button>
+          <button className="btn-primary-lg" type="submit">
+            Upload
+          </button>
         </form>
       </div>
-      <h3>Trips</h3>
     </div>
   );
 };

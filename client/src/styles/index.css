@@ -6,22 +6,36 @@
   --medium-color: #e5dfdc;
   --light-color: #f6f4f3;
   --error-color: #ff6666;
+  --error-light: #ffc2c2;
   --success-color: #57a773;
+  --success-light: #afd5bc;
 }
 
 body {
   font-family: 'Poppins', sans-serif;
   background-color: var(--light-color);
   color: var(--text-dark);
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+}
+
+h1 {
+  color: var(--text-light);
+  text-align: center;
+  font-style: italic;
 }
 
 h2 {
   color: var(--text-light);
-  text-align: center;
+  font-weight: 600;
   font-style: italic;
+}
+
+h3 {
+  color: var(--text-light);
+  font-style: italic;
+}
+
+li {
+  margin: 0.5rem 0;
 }
 
 table {
@@ -30,6 +44,8 @@ table {
 
 td {
   text-align: center;
+  border-top: 1px solid var(--medium-color);
+  height: 2rem;
 
   &.align-left {
     text-align: left;
@@ -44,10 +60,29 @@ th {
 }
 
 a {
+  color: var(--primary-color);
   text-decoration: none;
   text-transform: uppercase;
   &:hover {
     color: var(--primary-light);
+  }
+  &:visited {
+    color: var(--primary-color);
+  }
+}
+
+input {
+  text-align: center;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.75rem;
+  color: var(--text-light);
+  border: var(--medium-color) solid 1px;
+  border-radius: 0;
+  margin-right: 1rem;
+  padding: 0.725rem 0;
+
+  &:focus-visible {
+    outline: var(--primary-color) solid 1px;
   }
 }
 
@@ -58,21 +93,26 @@ a {
   background-color: var(--primary-color);
   border-radius: 0px;
   border-width: 0px;
-  padding: 0.5rem 1.5rem 0.55rem 1.5rem;
+  padding: 0.5rem 1.5rem 0.5rem 1.5rem;
   color: var(--light-color);
   text-decoration: none;
 
   &:hover {
     background-color: var(--primary-light);
   }
+
+  &:visited {
+    color: var(--light-color);
+  }
 }
 
 .btn-secondary-lg {
+  font-family: 'Poppins', sans-serif;
   text-transform: uppercase;
   font-size: 1rem;
   background-color: var(--light-color);
   border-radius: 0px;
-  /* border: 1px solid var(--primary-color); */
+  border-width: 0px;
   padding: 0.5rem 1.5rem 0.5rem 1.5rem;
   color: var(--primary-color);
   text-decoration: none;
@@ -80,11 +120,6 @@ a {
   &:hover {
     color: var(--primary-light);
   }
-}
-
-.loader-container {
-  margin-top: 40vh;
-  margin-bottom: 50vh;
 }
 
 .loader {
@@ -121,5 +156,23 @@ a {
   }
   100% {
     -webkit-mask-position: 0% 0%, 50% 0%, 100% 0%;
+  }
+}
+
+@keyframes slide-in {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-up {
+  0% {
+    transform: translateY(100%);
+  }
+  100% {
+    transform: translateY(0);
   }
 }

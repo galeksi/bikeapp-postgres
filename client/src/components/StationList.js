@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   GoogleMap,
   Marker,
@@ -10,6 +10,7 @@ import {
 import ReactPaginate from 'react-paginate';
 import { paginationLoader } from '../utils/helpers';
 
+import '../styles/StationList.css';
 import '../styles/map.css';
 import '../styles/pagination.css';
 import customMarkerIcon from '../assets/Map_marker_blue.png';
@@ -18,9 +19,29 @@ const StationList = ({ stations }) => {
   const [currentPage, setCurrentPage] = useState(0);
   const [searchedStations, setSearchedStations] = useState();
   const [search, setSearch] = useState('');
+  const [markers, setMarkers] = useState([]);
+  const [searchedMarkers, setSearchedMarkers] = useState();
   const [mapRef, setMapRef] = useState();
   const [isOpen, setIsOpen] = useState(false);
   const [infoWindowData, setInfoWindowData] = useState();
+
+  const createMarkers = (stations) => {
+    const markers = stations.map((s) => ({
+      name: s.nimi,
+      number: s.number,
+      address: s.osoite,
+      capacity: s.capacity,
+      lat: Number(s.lat),
+      lng: Number(s.long),
+    }));
+
+    return markers;
+  };
+
+  useEffect(() => {
+    const newMarkers = createMarkers(stations);
+    setMarkers(newMarkers);
+  }, []);
 
   // Loads google API key
   const { isLoaded } = useLoadScript({
@@ -31,15 +52,9 @@ const StationList = ({ stations }) => {
   const allStations = searchedStations ?? stations;
   const stationsToView = paginationLoader(allStations, currentPage, 20);
 
+  const markersToView = searchedMarkers ?? markers;
+
   // Google maps markers location and info
-  const markers = stations.map((s) => ({
-    name: s.nimi,
-    number: s.number,
-    address: s.osoite,
-    capacity: s.capacity,
-    lat: Number(s.lat),
-    lng: Number(s.long),
-  }));
 
   // Sets google map boundary and centers map accordingly
   const onMapLoad = (map) => {
@@ -70,7 +85,10 @@ const StationList = ({ stations }) => {
     const filteredStations = stations.filter((obj) =>
       JSON.stringify(obj).toLowerCase().includes(search.toLowerCase())
     );
+    const filteredMarkers = createMarkers(filteredStations);
+
     setSearchedStations(filteredStations);
+    setSearchedMarkers(filteredMarkers);
     setCurrentPage(0);
   };
 
@@ -86,39 +104,41 @@ const StationList = ({ stations }) => {
       onLoad={onMapLoad}
       onClick={() => setIsOpen(false)}
     >
-      {markers.map(({ lat, lng, name, number, address, capacity }, ind) => (
-        <Marker
-          key={ind}
-          position={{ lat, lng }}
-          icon={customMarkerIcon}
-          onClick={() => {
-            handleMarkerClick(ind, lat, lng, name, number, address, capacity);
-          }}
-        >
-          {isOpen && infoWindowData?.id === ind && (
-            <InfoWindow
-              onCloseClick={() => {
-                setIsOpen(false);
-              }}
-            >
-              <div>
-                <h3>
-                  {infoWindowData.number}&nbsp;-&nbsp;
-                  {infoWindowData.name}
-                </h3>
-                <p>
-                  {infoWindowData.address}
-                  <br />
-                  <em>
-                    Capacity:&nbsp;{infoWindowData.capacity}
-                    &nbsp;bikes
-                  </em>
-                </p>
-              </div>
-            </InfoWindow>
-          )}
-        </Marker>
-      ))}
+      {markersToView.map(
+        ({ lat, lng, name, number, address, capacity }, ind) => (
+          <Marker
+            key={ind}
+            position={{ lat, lng }}
+            icon={customMarkerIcon}
+            onClick={() => {
+              handleMarkerClick(ind, lat, lng, name, number, address, capacity);
+            }}
+          >
+            {isOpen && infoWindowData?.id === ind && (
+              <InfoWindow
+                onCloseClick={() => {
+                  setIsOpen(false);
+                }}
+              >
+                <div>
+                  <h3>
+                    {infoWindowData.number}&nbsp;-&nbsp;
+                    {infoWindowData.name}
+                  </h3>
+                  <p>
+                    {infoWindowData.address}
+                    <br />
+                    <em>
+                      Capacity:&nbsp;{infoWindowData.capacity}
+                      &nbsp;bikes
+                    </em>
+                  </p>
+                </div>
+              </InfoWindow>
+            )}
+          </Marker>
+        )
+      )}
     </GoogleMap>
   ) : (
     <div className="loader"></div>
@@ -126,22 +146,26 @@ const StationList = ({ stations }) => {
 
   return (
     <div>
-      <h2>Stations</h2>
+      <h1>Stations</h1>
       {googleMap}
       <div>
-        <div>
-          <form onSubmit={searchStations}>
-            <input
-              id="stationsearch"
-              value={search}
-              onChange={handleSearchChange}
-            />
-            <button id="stationsearchbutton" type="submit">
-              Search
-            </button>
-          </form>
-          <button onClick={clearSearch}>Clear search</button>
-        </div>
+        <form className="station-search-bar" onSubmit={searchStations}>
+          <input
+            id="stationsearch"
+            value={search}
+            onChange={handleSearchChange}
+          />
+          <button
+            className="btn-primary-lg"
+            id="stationsearchbutton"
+            type="submit"
+          >
+            Search
+          </button>
+          <button className="btn-secondary-lg" onClick={clearSearch}>
+            Clear
+          </button>
+        </form>
       </div>
       <ReactPaginate
         activeClassName={'item active '}
@@ -151,7 +175,7 @@ const StationList = ({ stations }) => {
         disabledClassName={'disabled-page'}
         marginPagesDisplayed={2}
         nextClassName={'item next '}
-        nextLabel={'forward >'}
+        nextLabel={'next >'}
         onPageChange={handlePageClick}
         forcePage={currentPage}
         pageCount={stationsToView.pageCount}
@@ -163,9 +187,9 @@ const StationList = ({ stations }) => {
       <table>
         <thead>
           <tr>
-            <th>Number</th>
             <th className="align-left">Name</th>
             <th className="align-left">Address</th>
+            <th>Number</th>
             <th>City</th>
             <th>Capacity</th>
             <th>Details</th>
@@ -174,9 +198,9 @@ const StationList = ({ stations }) => {
         <tbody>
           {stationsToView.items.map((s) => (
             <tr key={s.id}>
-              <td>{s.number}</td>
               <td className="align-left">{s.nimi}</td>
               <td className="align-left">{s.osoite}</td>
+              <td>{s.number}</td>
               <td>{s.kaupunki}</td>
               <td>{s.capacity}</td>
               <td>

@@ -2,7 +2,7 @@
 
 .item {
   align-items: center;
-  color: #71717a;
+  color: var(--text-light);
   cursor: pointer;
   display: flex;
   font-size: 14px;
@@ -11,12 +11,12 @@
   width: 40px;
 }
 
-.disabled-page {
-  color: #d4d4d8;
+.disabled-page a {
+  color: var(--light-color) !important;
 }
 
 .active {
-  border: solid 1px #2563eb;
+  border: solid 1px var(--primary-color);
   border-radius: 40px;
   color: #2563eb;
 }
@@ -31,7 +31,7 @@
 
 .pagination {
   align-items: center;
-  background-color: #e4e4e7;
+  background-color: var(--medium-color);
   display: flex;
   flex-direction: row;
   height: 60px;
@@ -39,8 +39,6 @@
   list-style-type: none;
   position: relative;
   width: 100%;
-  border-top-left-radius: 0.375rem;
-  border-top-right-radius: 0.375rem;
 }
 
 ul {

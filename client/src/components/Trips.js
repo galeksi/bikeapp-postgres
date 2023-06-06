@@ -5,9 +5,8 @@ import tripService from '../services/trips';
 import ReactPaginate from 'react-paginate';
 import { paginationLoader } from '../utils/helpers';
 import Select from 'react-select';
-import DatePicker from 'react-datepicker';
 
-import 'react-datepicker/dist/react-datepicker.css';
+import '../styles/Trips.css';
 import '../styles/pagination.css';
 
 const Trips = ({ stations }) => {
@@ -32,11 +31,6 @@ const Trips = ({ stations }) => {
     fetchTrips();
   }, []);
 
-  // if (allTrips.length === 0) {
-  //   // return <h1>Loading...</h1>;
-  //   return <div className="loader"></div>;
-  // }
-
   // Decides if all trips or filter result is added for pagination and initial view
   const trips = filteredTrips.length === 0 ? allTrips : filteredTrips;
   const tripsToView = paginationLoader(trips, currentPage, 50);
@@ -46,7 +40,7 @@ const Trips = ({ stations }) => {
     setCurrentPage(selected);
   };
 
-  // Triggers filtered query with variables and limits to 100 to reduce browser load
+  // Triggers filtered query with variables and limits to 500 to reduce browser load
   const filterTrips = async () => {
     const params = {};
     if (departureFilter) params.departureStation = departureFilter.value;
@@ -69,50 +63,49 @@ const Trips = ({ stations }) => {
 
   return (
     <div>
-      <h2>Trips</h2>
+      <h1>Trips</h1>
       {allTrips.length === 0 ? (
-        <div className="loader-container">
-          <div className="loader"></div>
-        </div>
+        <div className="loader"></div>
       ) : (
         <>
-          <div>
-            <div>
-              <Select
-                id="departurestation"
-                classNamePrefix="Departure..."
-                value={departureFilter}
-                isClearable={true}
-                isSearchable={true}
-                placeholder="Departure station"
-                options={stationOptions}
-                onChange={setDepartureFilter}
-              />
-              <Select
-                id="returnstation"
-                classNamePrefix="Return..."
-                value={returnFilter}
-                isClearable={true}
-                isSearchable={true}
-                placeholder="Return station"
-                options={stationOptions}
-                onChange={setReturnFilter}
-              />
-              <DatePicker
-                id="datepicker"
-                placeholderText="Date"
-                selected={startDate}
-                onChange={(date) => setStartDate(date)}
-              />
-            </div>
-            <div>
-              <div>
-                <button id="tripfilterbutton" onClick={filterTrips}>
-                  Filter
-                </button>
-                <button onClick={clearFilter}>Clear filter</button>
-              </div>
-            </div>
+          <div className="trip-filter-bar">
+            <Select
+              id="departurestation"
+              classNamePrefix="departure"
+              value={departureFilter}
+              isClearable={true}
+              isSearchable={true}
+              placeholder="Departure station"
+              options={stationOptions}
+              onChange={setDepartureFilter}
+            />
+            <Select
+              id="returnstation"
+              classNamePrefix="return"
+              value={returnFilter}
+              isClearable={true}
+              isSearchable={true}
+              placeholder="Return station"
+              options={stationOptions}
+              onChange={setReturnFilter}
+            />
+            <input
+              id="datepicker"
+              type="date"
+              name="start-date"
+              value={startDate}
+              onChange={({ target }) => setStartDate(target.value)}
+            ></input>
+            <button
+              className="btn-primary-lg"
+              id="tripfilterbutton"
+              onClick={filterTrips}
+            >
+              Filter
+            </button>
+            <button className="btn-secondary-lg" onClick={clearFilter}>
+              Clear
+            </button>
           </div>
           <ReactPaginate
             activeClassName={'item active '}

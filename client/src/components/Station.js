@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { GoogleMap, Marker, useLoadScript } from '@react-google-maps/api';
 import stationService from '../services/stations';
 
+import '../styles/Station.css';
 import '../styles/map.css';
 import customMarkerIcon from '../assets/Map_marker_blue.png';
 
@@ -38,9 +39,10 @@ const Station = ({ stations }) => {
 
   if (!station) {
     return (
-      <div className="loader-container">
-        <div className="loader"></div>
-      </div>
+      <>
+        <h1>Station...</h1>
+        <div className="loader"></div>;
+      </>
     );
   }
 
@@ -58,55 +60,71 @@ const Station = ({ stations }) => {
 
   return (
     <div>
-      <h2>
+      <h1>
         Station Nr {station.number}: {station.nimi}
-      </h2>
-      {googleMap}
-      <div>
-        <div>
-          <h2>
+      </h1>
+      <div className="station-container">
+        <div className="station-map">{googleMap}</div>
+        <div className="station-data">
+          <h3>
             {station.osoite}&nbsp;{station.kaupunki}
-          </h2>
+          </h3>
           <p>
-            <b>Capacity:</b>&nbsp;{station.capacity}&nbsp;bikes
+            <em>Capacity:</em>
+            <br />
+            {station.capacity}&nbsp;bikes
           </p>
           <p>
-            <b>Departures from station:</b>&nbsp;{station.stats.startTotal}
+            <em>Departures from station:</em>
+            <br />
+            {station.stats.startTotal}
           </p>
           <p>
-            <b>Returns to station:</b>&nbsp;{station.stats.returnTotal}
+            <em>Returns to station:</em>
+            <br />
+            {station.stats.returnTotal}
           </p>
           <p>
-            <b>Average distance for departure:</b>&nbsp;{station.stats.startAvg}
+            <em>Average distance for departure:</em>
+            <br />
+            {station.stats.startAvg}
             &nbsp;km
           </p>
           <p>
-            <b>Average distance for return:</b>&nbsp;{station.stats.returnAvg}
+            <em>Average distance for return:</em>
+            <br />
+            {station.stats.returnAvg}
             &nbsp;km
           </p>
         </div>
-        <div>
-          <h2>Most popular return stations:</h2>
+      </div>
+      <div className="station-container">
+        <div className="station-stats">
+          <h2>Popular return stations:</h2>
           <ol>
             {station.returnStations.map((s) => (
               <li key={s.id}>
-                <b>
-                  {s.nimi}&nbsp;(Nr.{s.number})
-                </b>
-                &nbsp;-&nbsp;{s.osoite}
+                <em>
+                  <a href={`/station/${s.id}`}>{s.nimi}</a>
+                  &nbsp;(Nr.{s.number})
+                </em>
+                <br />
+                {s.osoite}
               </li>
             ))}
           </ol>
         </div>
-        <div>
-          <h2>Most popular departure stations:</h2>
+        <div className="station-stats">
+          <h2>Popular departure stations:</h2>
           <ol>
             {station.departureStations.map((s) => (
               <li key={s.id}>
-                <b>
-                  {s.nimi}&nbsp;(Nr.{s.number})
-                </b>
-                &nbsp;-&nbsp;{s.osoite}
+                <em>
+                  <a href={`/station/${s.id}`}>{s.nimi}</a>
+                  &nbsp;(Nr.{s.number})
+                </em>
+                <br />
+                {s.osoite}
               </li>
             ))}
           </ol>
