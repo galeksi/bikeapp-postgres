@@ -1,7 +1,7 @@
 describe('Bikeapp', () => {
   it('front page can be opened', () => {
     cy.visit('http://localhost:3000/');
-    cy.contains('STATIONS');
+    cy.contains('Stations');
   });
 
   beforeEach(function () {
@@ -37,7 +37,7 @@ describe('Bikeapp', () => {
       cy.wait(5000);
       cy.get('#departurestation').click().type('Keilalahti{enter}');
       cy.get('#returnstation').click().type('Tapionaukio{enter}');
-      cy.get('#datepicker').click().type('07/27/2021{enter}');
+      cy.get('#datepicker').click().type('2021-07-27{enter}');
       cy.get('#tripfilterbutton').click();
       cy.wait(5000);
       cy.contains('10:45');

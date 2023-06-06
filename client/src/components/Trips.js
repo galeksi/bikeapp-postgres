@@ -71,7 +71,7 @@ const Trips = ({ stations }) => {
           <div className="trip-filter-bar">
             <Select
               id="departurestation"
-              classNamePrefix="Departure..."
+              classNamePrefix="departure"
               value={departureFilter}
               isClearable={true}
               isSearchable={true}
@@ -81,7 +81,7 @@ const Trips = ({ stations }) => {
             />
             <Select
               id="returnstation"
-              classNamePrefix="Return..."
+              classNamePrefix="return"
               value={returnFilter}
               isClearable={true}
               isSearchable={true}

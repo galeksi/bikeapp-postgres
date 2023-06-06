@@ -6,7 +6,9 @@
   --medium-color: #e5dfdc;
   --light-color: #f6f4f3;
   --error-color: #ff6666;
+  --error-light: #ffc2c2;
   --success-color: #57a773;
+  --success-light: #afd5bc;
 }
 
 body {
@@ -154,5 +156,23 @@ input {
   }
   100% {
     -webkit-mask-position: 0% 0%, 50% 0%, 100% 0%;
+  }
+}
+
+@keyframes slide-in {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-up {
+  0% {
+    transform: translateY(100%);
+  }
+  100% {
+    transform: translateY(0);
   }
 }

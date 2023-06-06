@@ -1,0 +1,12 @@
+.notification {
+  color: var(--success-color);
+  font-size: 1.25rem;
+  border: 2px solid var(--success-color);
+  border-radius: 0;
+  background-color: var(--success-light);
+  padding: 0.5em 2em;
+  margin-bottom: 1em;
+  position: fixed;
+  bottom: 0;
+  animation: slide-up 0.5s ease-in-out;
+}

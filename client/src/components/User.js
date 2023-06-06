@@ -22,8 +22,8 @@ const User = ({
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
 
-  const [departureStation, setDepartureStation] = useState({});
-  const [returnStation, setReturnStation] = useState({});
+  const [departureStation, setDepartureStation] = useState();
+  const [returnStation, setReturnStation] = useState();
   const [departureTime, setDepartureTime] = useState('');
   const [returnTime, setReturnTime] = useState('');
   const [distance, setDistance] = useState(0);
@@ -165,8 +165,8 @@ const User = ({
           onChange={({ target }) => setDepartureTime(target.value)}
         ></input>
         <Select
-          id="departurestation"
-          classNamePrefix="Departure..."
+          id="user-departure"
+          classNamePrefix="departure"
           value={departureStation}
           isClearable={true}
           isSearchable={true}
@@ -185,8 +185,8 @@ const User = ({
           onChange={({ target }) => setReturnTime(target.value)}
         ></input>
         <Select
-          id="returnstation"
-          classNamePrefix="Return..."
+          id="user-return"
+          classNamePrefix="return"
           value={returnStation}
           isClearable={true}
           isSearchable={true}

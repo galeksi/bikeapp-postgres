@@ -95,31 +95,33 @@ const App = () => {
     user === null ? (
       <div className="user-nav">
         <Togglable buttonLabel={'Login'} buttonLabelBack={'cancel'}>
-          <form onSubmit={handleLogin}>
-            <div>
-              username
+          <div className="login-container">
+            <form className="login-form" onSubmit={handleLogin}>
               <input
                 id="username"
                 type="text"
+                placeholder="username"
                 value={username}
                 name="Username"
                 onChange={({ target }) => setUsername(target.value)}
               />
-            </div>
-            <div>
-              password
               <input
                 id="password"
                 type="password"
+                placeholder="password"
                 value={password}
                 name="Password"
                 onChange={({ target }) => setPassword(target.value)}
               />
-            </div>
-            <button className="btn-primary-lg" id="login-button" type="submit">
-              login
-            </button>
-          </form>
+              <button
+                className="btn-primary-lg"
+                id="login-button"
+                type="submit"
+              >
+                login
+              </button>
+            </form>
+          </div>
         </Togglable>
         <Link className="btn-secondary-lg" to={'/signup'}>
           Register
