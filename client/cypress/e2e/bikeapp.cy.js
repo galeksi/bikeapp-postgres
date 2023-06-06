@@ -10,16 +10,13 @@ describe('Bikeapp', () => {
 
   describe('main pages can be visited', () => {
     it('trips can be opened', () => {
-      cy.contains('TRIPS').click();
+      cy.get('[href="/trips"]').click();
       cy.wait(5000);
       cy.contains('Trips');
     });
 
     it('stations can be opened', () => {
-      cy.contains('TRIPS').click();
-      cy.wait(5000);
-      cy.contains('Trips');
-      cy.contains('STATIONS').click();
+      cy.contains('Stations').click();
       cy.contains('Stations');
     });
   });
@@ -37,7 +34,7 @@ describe('Bikeapp', () => {
       cy.wait(5000);
       cy.get('#departurestation').click().type('Keilalahti{enter}');
       cy.get('#returnstation').click().type('Tapionaukio{enter}');
-      cy.get('#datepicker').click().type('2021-07-27{enter}');
+      cy.get('#datepicker').click().type('2021-07-27');
       cy.get('#tripfilterbutton').click();
       cy.wait(5000);
       cy.contains('10:45');
@@ -46,7 +43,7 @@ describe('Bikeapp', () => {
 
   describe('stations page', () => {
     it('stations are shown and paginated', () => {
-      cy.contains('forward').click();
+      cy.contains('next').click();
       cy.contains('Maarinranta');
     });
 
@@ -61,7 +58,7 @@ describe('Bikeapp', () => {
     it('station view is shown', () => {
       cy.contains('View').click();
       cy.wait(1500);
-      cy.contains('Most popular return stations');
+      cy.contains('Popular return stations');
     });
   });
 });
