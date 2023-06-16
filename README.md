@@ -1,4 +1,4 @@
-# SolitaDev BIKEAPP POSTGRES 2023
+# BIKEAPP POSTGRES 2023
 
 Application for public bikes in Helsinki
 
@@ -32,7 +32,7 @@ Variables in root/.env file:
   Variable in root/client/.env file:
 - REACT_APP_MAPS_API_KEY
 
-To login as an admin user to the application and see the admin panel one can use -> username and password: solita
+To login as an admin user to the application and see the admin panel one can use -> username: testadmin and password: admin
 
 ## Configurations:
 
@@ -115,7 +115,7 @@ IMPORTANT: Running Linux on Windows Subsystem (WSL2) might need some further set
 
 - Integration tests in frontend could be added
 - context or redux could be used for state management in frontend
-- frontend styling and UI could be enhanced
+- frontend styling and UI could be enhanced for mobile viewports
 
 ## Additional info
 
