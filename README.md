@@ -2,9 +2,11 @@
 
 Application for public bikes in Helsinki
 
+Solita Dev-academy pre-assignment: https://github.com/solita/dev-academy-2023-exercise
+
 ## Description:
 
-Web-application with Node.js Express Backend, React.js frontend and PostgreSQL database on Fly.io
+Web-application with Node.js Express Backend, React.js frontend and Postgres database on ElephantSQL
 The application icludes:
 
 - Public bike stations and trips in the Helsinki metropolitan area
@@ -17,6 +19,11 @@ The application icludes:
 - Admin profile view: Admin can see all users, disable, delete or make them admin; stations can be serached and capacity updated; csv files for stations and trips can be uploaded
 - CRUD Endpoints for stations, trips and users; not all endpoints are yet available in frontend
 - User sessions expire after 120min; sessions are additionaly managed serverside and saved to database; sessions are not deleted from DB, they expire or set 'logged out'
+
+## Additional info
+
+Link to previous version of application done with GraphQL and MongoDB:
+https://github.com/galeksi/bikeapp
 
 ## Prerequisites:
 
@@ -116,8 +123,3 @@ IMPORTANT: Running Linux on Windows Subsystem (WSL2) might need some further set
 - Integration tests in frontend could be added
 - context or redux could be used for state management in frontend
 - frontend styling and UI could be enhanced for mobile viewports
-
-## Additional info
-
-Link to previous version of application done with GraphQL and MongoDB:
-https://github.com/galeksi/bikeapp
